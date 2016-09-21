@@ -1,0 +1,74 @@
+package org.trustedanalytics.daaltk.operations
+
+import org.trustedanalytics.daaltk.DistributedAlgorithm
+import org.trustedanalytics.daaltk.models.tables.DaalConversionImplicits._
+import org.trustedanalytics.daaltk.models.tables.{ DistributedNumericTable, IndexedNumericTable }
+import org.trustedanalytics.daaltk.DaalUtils.withDaalContext
+import com.intel.daal.algorithms.covariance._
+import com.intel.daal.services.DaalContext
+import org.apache.spark.rdd.RDD
+
+/**
+ * Distributed algorithm for computing covariance matrix with Intel DAAL
+ *
+ * @param featureTable Feature table
+ */
+case class DaalCovarianceAlgorithm(featureTable: DistributedNumericTable)
+    extends DistributedAlgorithm[PartialResult, Result] {
+
+  /**
+   * Compute Variance-covariance matrix or correlation matrix
+   *
+   * Uses Intel DAAL default performance-oriented method for dense matrix
+   *
+   * @param matrixType Type of matrix to compute (Variance-Covariance or Correlation matrix)
+   *
+   * @return Variance-covariance matrix or correlation matrix
+   */
+  def computeCovariance(matrixType: ResultId): Array[Array[Double]] = {
+    withDaalContext { context =>
+      val partialResults = computePartialResults()
+      val results = mergePartialResults(context, partialResults)
+      val covarianceTable = IndexedNumericTable(0.toLong, results.get(matrixType))
+      covarianceTable.getUnpackedTable(context).toArrayOfDoubleArray()
+    }.elseError("Could not compute covariance matrix")
+  }
+
+  /**
+   * Compute partial results for covariance
+   *
+   * @return RDD of partial results
+   */
+  override def computePartialResults(): RDD[PartialResult] = {
+    featureTable.rdd.map { table =>
+      withDaalContext { context =>
+        val local = new DistributedStep1Local(context, classOf[java.lang.Double], Method.defaultDense)
+        local.input.set(InputId.data, table.getUnpackedTable(context))
+        val partialResult = local.compute
+        partialResult.pack()
+        partialResult
+      }.elseError("Could not compute partial results for covariance matrix ")
+    }
+  }
+
+  /**
+   * Merge partial covariance results on Spark driver to generate final result
+   *
+   * @param context DAAL Context
+   * @param rdd RDD of partial results
+   * @return Final result with covariance matrix
+   */
+  override def mergePartialResults(context: DaalContext, rdd: RDD[PartialResult]): Result = {
+    val partialResults = rdd.collect()
+    val master = new DistributedStep2Master(context, classOf[java.lang.Double], Method.defaultDense)
+
+    for (value <- partialResults) {
+      value.unpack(context)
+      master.input.add(DistributedStep2MasterInputId.partialResults, value)
+    }
+    master.compute
+
+    val result = master.finalizeCompute
+    result
+  }
+}
