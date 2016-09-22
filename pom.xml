@@ -762,7 +762,7 @@
             <dependency>
                 <groupId>org.trustedanalytics</groupId>
                 <artifactId>sparktk-core</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>master-SNAPSHOT</version>
             </dependency>
             <!-- START Intel DAAL dependencies -->
             <dependency>
