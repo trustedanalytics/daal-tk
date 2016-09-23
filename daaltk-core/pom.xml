@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>io.spray</groupId>
-            <artifactId>spray-json_${scala.short.version}</artifactId>
+            <artifactId>spray-json_${tap.scala.short.version}</artifactId>
         </dependency>
         <!--log4j-->
         <dependency>
@@ -125,21 +125,18 @@
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>-->
+
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scala.short.version}</artifactId>
+            <artifactId>spark-core_${tap.scala.short.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-yarn_${scala.short.version}</artifactId>
+            <artifactId>spark-yarn_${tap.scala.short.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scala.short.version}</artifactId>
+            <artifactId>spark-sql_${tap.scala.short.version}</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -147,30 +144,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>org.parboiled</groupId>
-            <artifactId>parboiled-scala_${scala.short.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.parboiled</groupId>
-            <artifactId>parboiled-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.threeten</groupId>
-            <artifactId>threeten-extra</artifactId>
-        </dependency>-->
+
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>tw.edu.ntu.csie</groupId>
-            <artifactId>libsvm</artifactId>
-        </dependency>-->
+
         <dependency>
             <groupId>org.apache.mahout</groupId>
             <artifactId>mahout-core</artifactId>

@@ -21,12 +21,16 @@
   export MAVEN_OPTS="-Xmx512m -XX:PermSize=256m"
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.trustedanalytics</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.trustedanalytics</groupId>
+        <artifactId>tap-root</artifactId>
+        <version>0.1.0</version>
+    </parent>
+
   <artifactId>daal-tk</artifactId>
   <packaging>pom</packaging>
   <version>master-SNAPSHOT</version>
-  <inceptionYear>2016</inceptionYear>
 
     <repositories>
         <repository>
@@ -40,8 +44,8 @@
             </snapshots>
         </repository>
         <repository>
-            <id>daal-tk</id>
-            <url>https://maven.trustedanalytics.org/content/repositories/public/</url>
+            <id>tap</id>
+            <url>https://tap.jfrog.io/tap/public</url>
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>daily</updatePolicy>
@@ -51,111 +55,27 @@
             </releases>
         </repository>
         <repository>
-            <id>cloudera cdh</id>
-            <url>https://repository.cloudera.com/cloudera/cloudera-repos/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>apache</id>
-            <url>https://repository.apache.org/content/groups/public/</url>
+            <id>tap-snapshots</id>
+            <url>https://tap.jfrog.io/tap/public-snapshots</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
             <releases>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </releases>
-        </repository>
-        <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>SparkPackagesRepo</id>
-            <url>http://dl.bintray.com/spark-packages/maven</url>
         </repository>
     </repositories>
 
-    <pluginRepositories>
-      <pluginRepository>
-        <id>daal-tk</id>
-        <url>http://maven.trustedanalytics.org/content/repositories/public/</url>
-        <snapshots>
-          <enabled>true</enabled>
-        </snapshots>
-        <releases>
-          <enabled>true</enabled>
-        </releases>
-      </pluginRepository>
-    </pluginRepositories>
-
-    <distributionManagement>
-        <repository>
-            <id>daaltk</id>
-            <url>https://maven.trustedanalytics.org/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>daaltk-snapshots</id>
-            <url>https://maven.trustedanalytics.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <properties>
-        <project.version>master-SNAPSHOT</project.version>
-        <top.dir>${project.basedir}</top.dir>
-        <buildtype>test</buildtype>
-
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <dep.cdh.version>cdh5.7.1</dep.cdh.version>
-        <dep.spark.version>1.6.0-${dep.cdh.version}</dep.spark.version>
-        <dep.spark.yarn.version>1.6.0-${dep.cdh.version}</dep.spark.yarn.version>
-        <dep.mahout.version>0.9-${dep.cdh.version}</dep.mahout.version>
-        <dep.parquet.version>1.5.0-${dep.cdh.version}</dep.parquet.version>
-        <dep.hbase.version>1.2.0-${dep.cdh.version}</dep.hbase.version>
-        <dep.hadoop2.version>2.6.0-${dep.cdh.version}</dep.hadoop2.version>
-        <dep.zookeeper.version>3.4.5-${dep.cdh.version}</dep.zookeeper.version>
-        <dep.typesafe-config.version>1.2.1</dep.typesafe-config.version>
-        <dep.hive.version>1.1.0-${dep.cdh.version}</dep.hive.version>
-        <dev.spark.hive.version>1.6.0-${dep.cdh.version}</dev.spark.hive.version>
-        <dep.daal.version>2016.2.181</dep.daal.version>
-        <dep.graphframes.version>0.1.0-spark1.5</dep.graphframes.version>
-        <!--START GAO MAVEN -->
-
-        <scala.long.version>2.10.5</scala.long.version>
-        <scala.short.version>2.10</scala.short.version>
-        <scalatest.version>2.1.6</scalatest.version>
-
-        <akka.version>2.3.11</akka.version>
-
-        <scoverage-plugin.version>1.0.4</scoverage-plugin.version>
-
-        <event.version>0.4.2</event.version>
-        <spark.broadcast.version>1.3</spark.broadcast.version>
-        <commons-lang3.version>3.3.2</commons-lang3.version>
-        <mavenVersion>3.1.1</mavenVersion>
-        <javaVersion>1.8</javaVersion>
         <artifactIdExcludesHive>hive-exec,hive-metastore</artifactIdExcludesHive>
         <artifactIdExcludesHadoop>hadoop-aws,hadoop-annotations,hadoop-mapreduce-client-common,hadoop-mapreduce-client-core,hadoop-mapreduce-client-jobclient,hadoop-mapreduce-client-shuffle,hadoop-yarn-api,hadoop-yarn-client,hadoop-yarn-common,hadoop-yarn-server-common,hadoop-yarn-server-web-proxy</artifactIdExcludesHadoop>
-        <artifactIdExcludesSpark>spark-hive_${scala.short.version},spark-yarn_${scala.short.version},spark-core_${scala.short.version},spark-mllib_${scala.short.version},spark-sql_${scala.short.version},spark-graphx_${scala.short.version},spark-catalyst_${scala.short.version},spark-launcher_${scala.short.version},spark-network-common_${scala.short.version},spark-network-shuffle_${scala.short.version},spark-streaming_${scala.short.version},spark-unsafe_${scala.short.version}</artifactIdExcludesSpark>
-        <artifactIdExcludesScala>spire_${scala.short.version},breeze_${scala.short.version},scala-library,scala-reflect,scalatest_${scala.short.version}</artifactIdExcludesScala>
+        <artifactIdExcludesSpark>spark-hive_${tap.scala.short.version},spark-yarn_${tap.scala.short.version},spark-core_${tap.scala.short.version},spark-mllib_${tap.scala.short.version},spark-sql_${tap.scala.short.version},spark-graphx_${tap.scala.short.version},spark-catalyst_${tap.scala.short.version},spark-launcher_${tap.scala.short.version},spark-network-common_${tap.scala.short.version},spark-network-shuffle_${tap.scala.short.version},spark-streaming_${tap.scala.short.version},spark-unsafe_${tap.scala.short.version}</artifactIdExcludesSpark>
+        <artifactIdExcludesScala>spire_${tap.scala.short.version},breeze_${tap.scala.short.version},scala-library,scala-reflect,scalatest_${tap.scala.short.version}</artifactIdExcludesScala>
         <artifactIdExcludesMisc>jdk.tools,mesos,scala-compiler</artifactIdExcludesMisc>
         <artifactIdExcludes>${artifactIdExcludesMisc},${artifactIdExcludesScala},${artifactIdExcludesSpark},${artifactIdExcludesHadoop},${artifactIdExcludesHive}</artifactIdExcludes>
         <!--org.apache.hadoop,org.apache.hbase,org.apache.hive-->
     </properties>
+
 
 
     <profiles>
@@ -168,7 +88,6 @@
                 </property>
             </activation>
             <modules>
-                <module>daal-utils</module>
                 <module>daaltk-core</module>
             </modules>
         </profile>
@@ -245,7 +164,7 @@
                             <configuration>
                                 <recompileMode>incremental</recompileMode>
                                 <useZincServer>true</useZincServer>
-                                <scalaVersion>${scala.long.version}</scalaVersion>
+                                <scalaVersion>${tap.scala.long.version}</scalaVersion>
                                 <checkMultipleScalaVersions>false</checkMultipleScalaVersions>
                             </configuration>
                         </plugin>
@@ -357,8 +276,8 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.scalatest</groupId>
-                        <artifactId>scalatest_${scala.short.version}</artifactId>
-                        <version>${scalatest.version}</version>
+                        <artifactId>scalatest_${tap.scala.short.version}</artifactId>
+                        <version>${tap.scalatest.version}</version>
                         <scope>test</scope>
                     </dependency>
                 </dependencies>
@@ -367,56 +286,10 @@
             <dependencies>
                 <dependency>
                     <groupId>org.scalatest</groupId>
-                    <artifactId>scalatest_${scala.short.version}</artifactId>
+                    <artifactId>scalatest_${tap.scala.short.version}</artifactId>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
-        </profile>
-        <profile>
-            <id>scala-coverage</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.scoverage</groupId>
-                            <artifactId>scoverage-maven-plugin</artifactId>
-                            <version>${scoverage-plugin.version}</version>
-                            <configuration>
-                                <scalaVersion>${scala.long.version}</scalaVersion>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-                <plugins>
-                    <plugin>
-                        <groupId>org.scoverage</groupId>
-                        <artifactId>scoverage-maven-plugin</artifactId>
-                        <version>${scoverage-plugin.version}</version>
-                        <configuration>
-                            <!--
-                                If you are using Scala 2.11.1 or less,
-                                then highlighting will not work (due to this bug which was fixed in 2.11.2
-                            -->
-                            <highlighting>false</highlighting>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-            <reporting>
-                <plugins>
-                    <plugin>
-                        <groupId>org.scoverage</groupId>
-                        <artifactId>scoverage-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.scala-tools</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </reporting>
         </profile>
         <profile>
             <id>devonly</id>
@@ -492,12 +365,7 @@
                     <artifactId>exec-maven-plugin</artifactId>
                     <version>1.3.2</version>
                 </plugin>
-                <plugin>
-                    <inherited>true</inherited>
-                    <groupId>org.scoverage</groupId>
-                    <artifactId>maven-scoverage-plugin</artifactId>
-                    <version>${scoverage-plugin.version}</version>
-                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -644,29 +512,7 @@
                     </filesets>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>${mavenVersion}</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>${javaVersion}</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -768,45 +614,30 @@
             <dependency>
                 <groupId>com.intel.daal</groupId>
                 <artifactId>daal-core</artifactId>
-                <version>${dep.daal.version}</version>
+                <version>${tap.daal.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.trustedanalytics</groupId>
                 <artifactId>daal-utils</artifactId>
-                <version>${project.version}</version>
+                <version>0.1.0</version>
             </dependency>
-            <!--<dependency>
-                <groupId>graphframes</groupId>
-                <artifactId>graphframes</artifactId>
-                <version>${dep.graphframes.version}</version>
-            </dependency>-->
-            <dependency>
-                <groupId>com.cloudera.sparkts</groupId>
-                <artifactId>sparkts</artifactId>
-                <version>0.3.2</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>breeze_${scala.short.version}</artifactId>
-                        <groupId>org.scalanlp</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-library</artifactId>
-                <version>${scala.long.version}</version>
+                <version>${tap.scala.long.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.scala-lang</groupId>
                 <artifactId>scala-reflect</artifactId>
-                <version>${scala.long.version}</version>
+                <version>${tap.scala.long.version}</version>
             </dependency>
 
             <!--org.apache.hadoop-->
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-common</artifactId>
-                <version>${dep.hadoop2.version}</version>
+                <version>${tap.hadoop2.version}</version>
                 <scope>provided</scope>
                 <exclusions>
                     <exclusion>
@@ -827,38 +658,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-hdfs</artifactId>
-                <version>${dep.hadoop2.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>jsp-2.1</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.servlet.jsp</groupId>
-                        <artifactId>jsp-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-mapreduce-client-app</artifactId>
-                <version>${dep.hadoop2.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_${scala.short.version}</artifactId>
-                <version>${dep.spark.version}</version>
+                <artifactId>spark-core_${tap.scala.short.version}</artifactId>
+                <version>${tap.spark.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.objenesis</groupId>
@@ -901,42 +705,14 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-yarn_${scala.short.version}</artifactId>
-                <version>${dep.spark.yarn.version}</version>
+                <artifactId>spark-yarn_${tap.scala.short.version}</artifactId>
+                <version>${tap.spark.yarn.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-mllib_${scala.short.version}</artifactId>
-                <version>${dep.spark.version}</version>
-                <!--not sure if this is going to work for imllib but the parent version is 0.9.1 and this was 0.9-incubating-->
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>servlet-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>servlet-api-2.5</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.xml.bind</groupId>
-                        <artifactId>jaxb-impl</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-graphx_${scala.short.version}</artifactId>
-                <version>${dep.spark.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_${scala.short.version}</artifactId>
-                <version>${dep.spark.version}</version>
+                <artifactId>spark-sql_${tap.scala.short.version}</artifactId>
+                <version>${tap.spark.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.typesafe</groupId>
@@ -944,7 +720,7 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.apache.spark</groupId>
-                        <artifactId>spark-core_${scala.short.version}</artifactId>
+                        <artifactId>spark-core_${tap.scala.short.version}</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.scala-lang</groupId>
@@ -952,11 +728,11 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.scalacheck</groupId>
-                        <artifactId>scala_check_${scala.short.version}</artifactId>
+                        <artifactId>scala_check_${tap.scala.short.version}</artifactId>
                     </exclusion>
                     <exclusion>
                         <groupId>org.scalatest</groupId>
-                        <artifactId>scalatest_${scala.short.version}</artifactId>
+                        <artifactId>scalatest_${tap.scala.short.version}</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -964,7 +740,7 @@
             <dependency>
                 <groupId>org.apache.mahout</groupId>
                 <artifactId>mahout-core</artifactId>
-                <version>${dep.mahout.version}</version>
+                <version>${tap.mahout.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.hadoop</groupId>
@@ -995,7 +771,7 @@
             <dependency>
                 <groupId>org.apache.mahout</groupId>
                 <artifactId>mahout-math</artifactId>
-                <version>${dep.mahout.version}</version>
+                <version>${tap.mahout.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.commons</groupId>
@@ -1003,180 +779,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <!--org.apache.hbase-->
-            <!--<dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-protocol</artifactId>
-                <version>${dep.hbase.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.github.stephenc.findbugs</groupId>
-                        <artifactId>findbugs-annotations</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-common</artifactId>
-                <version>${dep.hbase.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-server</artifactId>
-                <version>${dep.hbase.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>commons-logging</artifactId>
-                        <groupId>commons-logging</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.servlet</groupId>
-                        <artifactId>servlet-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>servlet-api-2.5</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.servlet.jsp</groupId>
-                        <artifactId>jsp-api</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>jsp-2.1</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.mortbay.jetty</groupId>
-                        <artifactId>jsp-api-2.1</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-log4j12</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-client</artifactId>
-                <version>${dep.hbase.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.hbase</groupId>
-                <artifactId>hbase-testing-util</artifactId>
-                <version>${dep.hbase.version}</version>
-                <type>test-jar</type>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.hadoop</groupId>
-                        <artifactId>hadoop-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>-->
-
-            <!--commons-->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>1.7</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>3.2.1</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-beanutils</groupId>
-                        <artifactId>commons-beanutils-core</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>commons-configuration</groupId>
-                <artifactId>commons-configuration</artifactId>
-                <version>1.6</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-beanutils</groupId>
-                        <artifactId>commons-beanutils</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-beanutils</groupId>
-                        <artifactId>commons-beanutils-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.10</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-net</groupId>
-                <artifactId>commons-net</artifactId>
-                <version>3.1</version>
-            </dependency>
-            <!--<dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-csv</artifactId>
-                <version>1.0</version>
-            </dependency>-->
-
             <!--log4j-->
             <dependency>
                 <groupId>log4j</groupId>
@@ -1202,7 +804,7 @@
             <!--IO spray-->
             <dependency>
                 <groupId>io.spray</groupId>
-                <artifactId>spray-json_${scala.short.version}</artifactId>
+                <artifactId>spray-json_${tap.scala.short.version}</artifactId>
                 <version>1.2.6</version>
             </dependency>
 
@@ -1212,355 +814,7 @@
                 <artifactId>config</artifactId>
                 <version>1.2.1</version>
             </dependency>
-            <!--
-            <dependency>
-                <groupId>org.threeten</groupId>
-                <artifactId>threeten-extra</artifactId>
-                <version>0.9</version>
-            </dependency>
-            <dependency>
-                <groupId>org.parboiled</groupId>
-                <artifactId>parboiled-scala_${scala.short.version}</artifactId>
-                <version>1.1.6</version>
-            </dependency>
-            <dependency>
-                <groupId>org.parboiled</groupId>
-                <artifactId>parboiled-core</artifactId>
-                <version>1.1.6</version>
-            </dependency>-->
-            <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-core-asl</artifactId>
-                <version>1.9.13</version>
-            </dependency>
-            <dependency>
-                <groupId>com.spatial4j</groupId>
-                <artifactId>spatial4j</artifactId>
-                <version>0.3</version>
-            </dependency>
-            <!--<dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>14.0.1</version>
-            </dependency>-->
-            <dependency>
-                <groupId>com.googlecode.json-simple</groupId>
-                <artifactId>json-simple</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.module</groupId>
-                <artifactId>jackson-module-scala_${scala.short.version}</artifactId>
-                <version>2.2.3</version>
-            </dependency>
 
-            <!--test scope-->
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-all</artifactId>
-                <version>1.9.5</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-module-junit4</artifactId>
-                <version>1.5.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.10</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.powermock</groupId>
-                <artifactId>powermock-api-mockito</artifactId>
-                <version>1.5.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.mrunit</groupId>
-                <artifactId>mrunit</artifactId>
-                <version>1.0.0</version>
-                <classifier>hadoop1</classifier>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.novocode</groupId>
-                <artifactId>junit-interface</artifactId>
-                <version>0.10</version>
-                <scope>provided</scope>
-            </dependency>
-           <!-- <dependency>
-                <groupId>tw.edu.ntu.csie</groupId>
-                <artifactId>libsvm</artifactId>
-                <version>3.17</version>
-            </dependency>-->
-            <dependency>
-                <groupId>com.databricks</groupId>
-                <artifactId>spark-csv_2.10</artifactId>
-                <version>1.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>1.3.175</version>
-            </dependency>
-
-            <!--stop transative dependencies from being included in distribution-->
-
-            <dependency>
-                <groupId>org.codehaus.janino</groupId>
-                <artifactId>janino</artifactId>
-                <version>2.7.8</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.sourceforge.f2j</groupId>
-                <artifactId>arpack_combined_all</artifactId>
-                <version>0.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.scala-lang</groupId>
-                <artifactId>scalap</artifactId>
-                <version>2.10.4</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
-                <version>4.0.29.Final</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.2.3</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.fusesource.leveldbjni</groupId>
-                <artifactId>leveldbjni-all</artifactId>
-                <version>1.8</version>
-                <scope>provided</scope>
-            </dependency>
-
-
-            <dependency>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>datanucleus-core</artifactId>
-                <version>3.2.10</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>datanucleus-api-jdo</artifactId>
-                <version>3.2.6</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.datanucleus</groupId>
-                <artifactId>datanucleus-rdbms</artifactId>
-                <version>3.2.9</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.calcite</groupId>
-                <artifactId>calcite-core</artifactId>
-                <version>1.2.0-incubating</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.calcite</groupId>
-                <artifactId>calcite-avatica</artifactId>
-                <version>1.2.0-incubating</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty.orbit</groupId>
-                <artifactId>javax.servlet</artifactId>
-                <version>3.0.0.v201112011016</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.derby</groupId>
-
-                <artifactId>derby</artifactId>
-                <version>10.11.1.1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk</artifactId>
-                <version>1.7.4</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.groovy</groupId>
-                <artifactId>groovy-all</artifactId>
-                <version>2.4.4</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.roaringbitmap</groupId>
-                <artifactId>RoaringBitmap</artifactId>
-                <version>0.4.5</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.jets3t</groupId>
-                <artifactId>jets3t</artifactId>
-                <version>0.9.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.lowagie</groupId>
-                <artifactId>itext</artifactId>
-                <version>2.1.5</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.mesos</groupId>
-                <artifactId>mesos</artifactId>
-                <version>0.21.1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>xpp3</groupId>
-                <artifactId>xpp3_min</artifactId>
-                <version>1.1.4c</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>bouncycastle</groupId>
-                <artifactId>bcprov-jdk14</artifactId>
-                <version>138</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>aopalliance</groupId>
-                <artifactId>aopalliance</artifactId>
-                <version>1.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.zookeeper</groupId>
-                <artifactId>zookeeper</artifactId>
-                <version>3.4.5-${dep.cdh.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.ivy</groupId>
-                <artifactId>ivy</artifactId>
-                <version>2.4.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty</artifactId>
-                <version>3.6.6.Final</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.rwl</groupId>
-                <artifactId>jtransforms</artifactId>
-                <version>2.4.0</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>1.9</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-core</artifactId>
-                <version>1.9</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-json</artifactId>
-                <version>1.9</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-server</artifactId>
-                <version>1.9</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey.contribs</groupId>
-                <artifactId>jersey-guice</artifactId>
-                <version>1.9</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>2.2.3-1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>2.2.3-1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.1</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-jaxrs</artifactId>
-                <version>1.8.8</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-xc</artifactId>
-                <version>1.8.8</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>jfree</groupId>
-                <artifactId>jcommon</artifactId>
-                <version>1.0.16</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jfree</groupId>
-                <artifactId>jfreechart</artifactId>
-                <version>1.0.13</version>
-                <scope>provided</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
