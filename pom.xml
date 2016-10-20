@@ -168,19 +168,6 @@
                                 <checkMultipleScalaVersions>false</checkMultipleScalaVersions>
                             </configuration>
                         </plugin>
-                        <plugin>
-                            <groupId>org.trustedanalytics</groupId>
-                            <artifactId>atk-maven-plugin</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <executions>
-                                <execution>
-                                    <id>compile</id>
-                                    <goals>
-                                        <goal>generate-conf</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
                         <!--END DO NOT TOUCH-->
                     </plugins>
                 </pluginManagement>
