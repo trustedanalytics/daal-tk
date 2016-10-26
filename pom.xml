@@ -47,8 +47,7 @@
             <id>tap</id>
             <url>https://tap.jfrog.io/tap/public</url>
             <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
