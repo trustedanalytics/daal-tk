@@ -12,6 +12,7 @@ import org.trustedanalytics.sparktk.frame.internal.rdd.FrameRdd
 import org.trustedanalytics.sparktk.models.MatrixImplicits._
 import org.trustedanalytics.sparktk.models.dimreduction.pca.PrincipalComponentsFunctions
 import org.trustedanalytics.sparktk.saveload.{ SaveLoad, TkSaveLoad, TkSaveableObject }
+import org.apache.spark.mllib.stat.{ MultivariateStatisticalSummary, Statistics }
 
 object PrincipalComponentsModel extends TkSaveableObject {
   /**
@@ -157,12 +158,17 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable {
     // Validate arguments
     val predictC = c.getOrElse(svdData.k)
     val predictColumns = observationColumns.getOrElse(svdData.observationColumns)
-
     val frameRdd = new FrameRdd(frame.schema, frame.rdd)
+    val columnStatistics = frameRdd.columnStatistics(predictColumns)
 
     //TODO: Update predict method once DAAL supports linear algebra operations on its numeric tables
     // Predict principal components and optional T-squared index
-    val indexedRowMatrix = PrincipalComponentsFunctions.toIndexedRowMatrix(frameRdd, predictColumns, meanCentered)
+    val indexedRowMatrix = PrincipalComponentsFunctions.toIndexedRowMatrix(
+      frameRdd.zipWithIndex().map { case (row, index) => (index, row) },
+      frame.schema,
+      predictColumns,
+      meanCentered,
+      columnStatistics.mean.toArray)
     val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.vFactor, predictC, indexedRowMatrix)
 
     val pcaColumns = for (i <- 1 to predictC) yield Column("p_" + i.toString, DataTypes.float64)

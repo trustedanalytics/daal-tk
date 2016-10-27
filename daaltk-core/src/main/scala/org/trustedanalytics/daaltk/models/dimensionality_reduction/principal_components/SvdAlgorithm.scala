@@ -13,6 +13,7 @@ import org.trustedanalytics.daaltk.models.tables.DaalConversionImplicits._
 import org.trustedanalytics.daaltk.models.tables.{ DistributedNumericTable, IndexedNumericTable }
 import org.trustedanalytics.sparktk.frame.internal.rdd.FrameRdd
 import org.trustedanalytics.sparktk.models.dimreduction.pca.PrincipalComponentsFunctions
+import org.apache.spark.mllib.stat.{ MultivariateStatisticalSummary, Statistics }
 
 /**
  * Partial results of singular value decomposition algorithm
@@ -42,8 +43,8 @@ case class SvdAlgorithm(frameRdd: FrameRdd,
                         observationColumns: Seq[String],
                         meanCentered: Boolean) extends DistributedAlgorithm[SvdPartialResults, SvdMasterResult] {
 
-  private val vectorRdd = PrincipalComponentsFunctions.toVectorRdd(frameRdd,
-    observationColumns, meanCentered)
+  private val vectorRdd = if (meanCentered) frameRdd.toMeanCenteredDenseVectorRdd(observationColumns)
+  else frameRdd.toDenseVectorRdd(observationColumns)
   private val distributedTable = DistributedNumericTable.createTable(vectorRdd)
 
   /**
@@ -60,8 +61,7 @@ case class SvdAlgorithm(frameRdd: FrameRdd,
     val modelData = withDaalContext { context =>
       val partialResults = computePartialResults()
       val svdMasterResult = mergePartialResults(context, partialResults)
-
-      val columnStatistics = frameRdd.columnStatistics(observationColumns)
+      val columnStatistics = Statistics.colStats(vectorRdd)
       val singularValues = getSingularValues(svdMasterResult, k)
       val rightSingularMatrix = getRightSingularMatrix(svdMasterResult, k)
       val leftSingularMatrix = computeLeftSingularMatrix(svdMasterResult.partialResult,
