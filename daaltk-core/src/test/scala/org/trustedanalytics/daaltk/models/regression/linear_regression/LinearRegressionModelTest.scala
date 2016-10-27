@@ -106,5 +106,25 @@ class LinearRegressionModelTest extends TestingSparkContextWordSpec with Matcher
       assert(thrown.getMessage.contains("Invalid column name bogus provided"))
     }
 
+    "return a prediction when calling score on a trained model" in {
+      val rdd = sparkContext.parallelize(frameData)
+      val frame = new Frame(rdd, schema)
+
+      // Model training
+      val model = LinearRegressionModel.train(frame, "y", List("x1"))
+
+      // Score
+      val inputData = 5.0
+      val inputArray = Array[Any](inputData)
+      assert(model.input().length == inputArray.length)
+      val scoreResult = model.score(inputArray)
+      assert(scoreResult.length == model.output().length)
+      assert(scoreResult(0) == inputData)
+      val expectedScore = 12.186969696969696
+      scoreResult(1) match {
+        case score: Double => assertAlmostEqual(score, expectedScore)
+        case _ => throw new RuntimeException(s"Expected prediction to be an Double but is ${scoreResult(1).getClass.getSimpleName}")
+      }
+    }
   }
 }

@@ -76,5 +76,27 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
       assert(thrown.getMessage.contains("Number of components must be at most the number of components trained on"))
     }
 
+    "return a prediction when calling score on a trained model" in {
+      val rdd = sparkContext.parallelize(frameData)
+      val frame = new Frame(rdd, schema)
+
+      // model train
+      val k = 3
+      val model = PrincipalComponentsModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(k))
+
+      // Score
+      val inputArray = Array[Any](2.6, 1.7, 0.3, 1.5, 0.8, 0.7)
+      assert(model.input().length == inputArray.length)
+      val scoreResult = model.score(inputArray)
+      assert(scoreResult.length == model.output().length)
+      for ((input, i) <- inputArray.zipWithIndex)
+        assert(scoreResult(i) == input)
+      val pcIndex = inputArray.length
+      scoreResult(pcIndex) match {
+        case pc: List[_] => assert(pc.length == k)
+        case _ => throw new RuntimeException(s"Expected principal components score result to be a List but is ${scoreResult(pcIndex).getClass.getSimpleName}")
+      }
+    }
+
   }
 }

@@ -7,6 +7,7 @@ from sparktk.propobj import PropertiesObject
 from sparktk.frame.ops.classification_metrics_value import ClassificationMetricsValue
 from sparktk import TkContext
 from daaltk import Daal
+from sparktk.arguments import require_type
 
 __all__ = ['train','load','NaiveBayesModel']
 
@@ -136,6 +137,31 @@ class NaiveBayesModel(PropertiesObject):
         precision        = 1.0
         recall           = 0.666666666667
 
+    The trained model can be saved and restored:
+
+        >>> model.save("sandbox/daal_naive_bayes")
+
+        >>> restored_model = tc.load("sandbox/daal_naive_bayes")
+        >>> predict_from_restored = restored_model.predict(frame)
+        >>> predict_from_restored.inspect()
+        [#]  Class  Dim_1          Dim_2         predicted_class
+        ========================================================
+        [0]      1  19.8446136104  2.2985856384              0.0
+        [1]      1  16.8973559126  2.6933495054              1.0
+        [2]      1   5.5548729596  2.7777687995              1.0
+        [3]      0  46.1810010826  3.1611961917              0.0
+        [4]      0  44.3117586448  3.3458963222              0.0
+        [5]      0  34.6334526911  3.6429838715              0.0
+
+    The trained model can also be exported to a .mar file, to be used with the scoring engine:
+
+        >>> canonical_path = model.export_to_mar("sandbox/daalNaiveBayes.mar")
+
+    <hide>
+        >>> import os
+        >>> assert(os.path.isfile(canonical_path))
+    </hide>
+
     """
 
     def __init__(self, tc, scala_model):
@@ -230,4 +256,18 @@ class NaiveBayesModel(PropertiesObject):
         Save the trained model to the specified path
         :param path: Path to save
         """
+        require_type.non_empty_str(path, "path")
         self._scala.save(self._tc._scala_sc, path)
+
+    def export_to_mar(self, path):
+        """
+        Exports the trained model as a model archive (.mar) to the specified path
+
+        Parameters
+        ----------
+
+        :param path: (str) Path to save the trained model
+        :return: (str) Full path to the saved .mar file
+        """
+        require_type.non_empty_str(path, "path")
+        return self._scala.exportToMar(self._tc._scala_sc, path)

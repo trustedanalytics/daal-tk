@@ -1,8 +1,8 @@
 # daal-tk
 
 **daal-tk** is a library that provides access to Intel DAAL models and operations.
-It is used along with [spark-tk](https://github.com/trustedanalytics/spark-tk), which
-provides an API for creating and manipulating frames of data.
+It is used along with [spark-tk](https://github.com/trustedanalytics/spark-tk) frames, 
+which provide an API for creating and manipulating frames of data.
 
 ### Prerequisites
 
@@ -34,7 +34,7 @@ To build all the jars necessary to run daal-tk:
 mvn install -DskipTests
 ```
 
-If you want to run all the test run the maven package without skipTests option:
+If you want to run all the tests, run the maven package without skipTests option:
 
 ```
 mvn install
@@ -47,7 +47,7 @@ parameter for initialization:
 
 [//]:# "<skip>"
     >>> import daaltk
-    >>> import spartk
+    >>> import sparktk
     
     >>> tc = sparktk.TkContext(other_libs=[daaltk])
 [//]:# "</skip>"
@@ -135,3 +135,13 @@ model.
     k                   = 2
     label_column        = predicted_cluster
     observation_columns = [u'data']
+    
+The trained model can also be exported to a .mar file, in order to be used
+along with the [scoring engine](https://github.com/trustedanalytics/scoring-engine):
+
+    >>> full_path = model.export_to_mar("sandbox/myKMeansModel.mar")
+    
+    [//]:# "<hide>"
+        >>> import os
+        >>> assert(os.path.isfile(full_path))
+    [//]:# "</hide>"

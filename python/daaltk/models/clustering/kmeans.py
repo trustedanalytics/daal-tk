@@ -6,6 +6,7 @@ from sparktk.frame.frame import Frame
 from sparktk.propobj import PropertiesObject
 from sparktk import TkContext
 from daaltk import Daal
+from sparktk.arguments import require_type
 
 __all__ = ['train','load','KMeansModel']
 
@@ -161,6 +162,48 @@ class KMeansModel(PropertiesObject):
         [8]                  0
         [9]                  1
 
+    The trained model can be saved and restored:
+
+        >>> model.save("sandbox/daal_kmeans")
+
+        >>> restored_model = tc.load("sandbox/daal_kmeans")
+        >>> predict_from_restored = restored_model.predict(frame, ["data"])
+        >>> predict_from_restored.inspect()
+        [#]  data   name     distance_from_cluster_0  distance_from_cluster_1
+        =====================================================================
+        [0]    2.0  ab                 2.77777777778                  13924.0
+        [1]    1.0  cd                 7.11111111111                  14161.0
+        [2]    7.0  ef                 11.1111111111                  12769.0
+        [3]    1.0  gh                 7.11111111111                  14161.0
+        [4]    9.0  ij                 28.4444444444                  12321.0
+        [5]    2.0  kl                 2.77777777778                  13924.0
+        [6]    0.0  mn                 13.4444444444                  14400.0
+        [7]    6.0  op                 5.44444444444                  12996.0
+        [8]    5.0  qr                 1.77777777778                  13225.0
+        [9]  120.0  outlier            13533.4444444                      0.0
+        <BLANKLINE>
+        [#]  predicted_cluster
+        ======================
+        [0]                  0
+        [1]                  0
+        [2]                  0
+        [3]                  0
+        [4]                  0
+        [5]                  0
+        [6]                  0
+        [7]                  0
+        [8]                  0
+        [9]                  1
+
+    The trained model can also be exported to a .mar file, to be used with the scoring engine:
+
+        >>> canonical_path = model.export_to_mar("sandbox/daalKMeans.mar")
+
+    <hide>
+        >>> import os
+        >>> assert(os.path.isfile(canonical_path))
+    </hide>
+
     """
     def __init__(self, tc, scala_model):
         self._tc = tc
@@ -258,3 +301,16 @@ class KMeansModel(PropertiesObject):
         :param path: Path to save
         """
         self._scala.save(self._tc._scala_sc, path)
+
+    def export_to_mar(self, path):
+        """
+        Exports the trained model as a model archive (.mar) to the specified path
+
+        Parameters
+        ----------
+
+        :param path: (str) Path to save the trained model
+        :return: (str) Full path to the saved .mar file
+        """
+        require_type.non_empty_str(path, "path")
+        return self._scala.exportToMar(self._tc._scala_sc, path)

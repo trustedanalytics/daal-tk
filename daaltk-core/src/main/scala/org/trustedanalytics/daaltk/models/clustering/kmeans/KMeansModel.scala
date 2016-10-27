@@ -1,14 +1,21 @@
 package org.trustedanalytics.daaltk.models.clustering.kmeans
 
+import java.lang
+import com.intel.daal.algorithms.kmeans.{ ResultId, InputId, Method, Batch }
+import com.intel.daal.data_management.data.HomogenNumericTable
+import com.intel.daal.services.DaalContext
 import org.apache.spark.SparkContext
 import org.apache.commons.lang.StringUtils
 import org.trustedanalytics.daaltk.DaalUtils
+import org.trustedanalytics.daaltk.models.{ DaalModel, DaalTkScoringModelUtils, DaalTkModelAdapter }
 import org.trustedanalytics.sparktk.TkContext
 import org.trustedanalytics.sparktk.frame.internal.rdd.FrameRdd
 import org.trustedanalytics.sparktk.frame._
 import org.trustedanalytics.sparktk.saveload.{ SaveLoad, TkSaveLoad, TkSaveableObject }
 import scala.language.implicitConversions
 import org.json4s.JsonAST.JValue
+import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
+import org.trustedanalytics.sparktk.models.ScoringModelUtils
 
 object KMeansModel extends TkSaveableObject {
   /**
@@ -112,7 +119,7 @@ case class KMeansModel private[kmeans] (trainingObservationColumns: Seq[String],
                                         centroids: Array[Array[Double]],
                                         clusters: Array[String],
                                         clusterSize: Array[Long],
-                                        columnScalings: Option[Seq[Double]]) extends Serializable {
+                                        columnScalings: Option[Seq[Double]]) extends Serializable with Model with DaalModel {
 
   /**
    * Array of observation columns used during training
@@ -158,12 +165,38 @@ case class KMeansModel private[kmeans] (trainingObservationColumns: Seq[String],
   }
 
   /**
+   * Predict cluster ID from feature array, used for scoring.
+   *
+   * @param features feature array
+   * @return cluster ID
+   */
+  private def predictCluster(features: Array[Double]): Int = {
+    val context = new DaalContext
+
+    val algorithm = new Batch(context, classOf[lang.Double], Method.lloydDense, k.toLong, 1L)
+    val input = new HomogenNumericTable(context, features, features.length, 1L)
+    val centroidsTable = DaalTkScoringModelUtils.toDaalNumericTable(centroids)
+    centroidsTable.unpack(context)
+    algorithm.input.set(InputId.data, input)
+    algorithm.input.set(InputId.inputCentroids, centroidsTable)
+    algorithm.parameter.setAssignFlag(true)
+
+    val result = algorithm.compute()
+
+    val assignments = result.get(ResultId.assignments).asInstanceOf[HomogenNumericTable]
+    val clusterId = DaalTkScoringModelUtils.toDoubleArray(assignments).head
+    context.dispose()
+
+    clusterId.toInt
+  }
+
+  /**
    * Saves this model to a file
    *
    * @param sc active SparkContext
    * @param path save to path
    */
-  def save(sc: SparkContext, path: String): Unit = {
+  override def save(sc: SparkContext, path: String): Unit = {
     val tkMetadata = KMeansModelTkMetaData(trainingObservationColumns,
       trainingLabelColumn,
       k,
@@ -172,6 +205,45 @@ case class KMeansModel private[kmeans] (trainingObservationColumns: Seq[String],
       clusterSize,
       columnScalings)
     TkSaveLoad.saveTk(sc, path, KMeansModel.formatId, KMeansModel.currentFormatVersion, tkMetadata)
+  }
+
+  /**
+   * Scores the given row using the trained DAAL KMeans model
+   *
+   * @param row Row of input data
+   * @return Input row, plus the score
+   */
+  override def score(row: Array[Any]): Array[Any] = {
+    val features: Array[Double] = row.map(y => ScoringModelUtils.asDouble(y))
+    val clusterId = predictCluster(features)
+
+    row :+ clusterId
+  }
+
+  /**
+   * @return DAAL KMeans model metadata
+   */
+  override def modelMetadata(): ModelMetaData = {
+    new ModelMetaData("Intel DAAL KMeans Model", classOf[KMeansModel].getName, classOf[DaalTkModelAdapter].getName, Map())
+  }
+
+  /**
+   * @return fields containing the input names and their data types
+   */
+  override def input(): Array[Field] = {
+    var input = Array[Field]()
+    trainingObservationColumns.foreach { name =>
+      input = input :+ Field(name, "Double")
+    }
+    input
+  }
+
+  /**
+   * @return fields containing the input names and their data types along with the output and its data type
+   */
+  override def output(): Array[Field] = {
+    var output = input()
+    output :+ Field("score", "Int")
   }
 }
 

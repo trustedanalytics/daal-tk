@@ -6,6 +6,7 @@ from sparktk.frame.frame import Frame
 from sparktk.propobj import PropertiesObject
 from sparktk import TkContext
 from daaltk import Daal
+from sparktk.arguments import require_type
 
 __all__ = ['train','load','LinearRegressionModel']
 
@@ -130,6 +131,35 @@ class LinearRegressionModel(PropertiesObject):
         [7]  7.0  17.15     17.0748484848
         [8]  8.0   18.5     19.5187878788
         [9]  9.0   23.5     21.9627272727
+
+    The trained model can be saved and restored:
+
+        >>> model.save("sandbox/daal_linear_regression")
+
+        >>> restored_model = tc.load("sandbox/daal_linear_regression")
+        >>> predict_from_restored = restored_model.predict(frame, observation_columns = ["x1"])
+        >>> predict_from_restored.inspect()
+        [#]  x1   y      predict_y
+        =================================
+        [0]  0.0    0.0  -0.0327272727273
+        [1]  1.0    2.5     2.41121212121
+        [2]  2.0    5.0     4.85515151515
+        [3]  3.0    7.5     7.29909090909
+        [4]  4.0   10.0     9.74303030303
+        [5]  5.0   12.5      12.186969697
+        [6]  6.0   13.0     14.6309090909
+        [7]  7.0  17.15     17.0748484848
+        [8]  8.0   18.5     19.5187878788
+        [9]  9.0   23.5     21.9627272727
+
+    The trained model can also be exported to a .mar file, to be used with the scoring engine:
+
+        >>> canonical_path = model.export_to_mar("sandbox/daalLinearRegression.mar")
+
+    <hide>
+        >>> import os
+        >>> assert(os.path.isfile(canonical_path))
+    </hide>
 
     """
     def __init__(self, tc, scala_model):
@@ -264,6 +294,19 @@ class LinearRegressionModel(PropertiesObject):
         :param path: Path to save
         """
         self._scala.save(self._tc._scala_sc, path)
+
+    def export_to_mar(self, path):
+        """
+        Exports the trained model as a model archive (.mar) to the specified path
+
+        Parameters
+        ----------
+
+        :param path: (str) Path to save the trained model
+        :return: (str) Full path to the saved .mar file
+        """
+        require_type.non_empty_str(path, "path")
+        return self._scala.exportToMar(self._tc._scala_sc, path)
 
 
 class LinearRegressionTestReturn(PropertiesObject):
