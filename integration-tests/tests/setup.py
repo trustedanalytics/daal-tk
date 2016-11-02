@@ -37,7 +37,7 @@ def tc(request):
                            master='local[2]',
                            sparktk_home=sparktk_dir,
                            app_name="pytest-pyspark-local-testing",
-                           extra_conf={"spark.hadoop.fs.default.name": "file:///"}
+                           extra_conf_dict={"spark.hadoop.fs.default.name": "file:///"}
                            )
             request.addfinalizer(lambda: sc.stop())
 
