@@ -159,7 +159,7 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
    * @param features Array with input features
    * @return score
    */
-  private def predict(features: Array[Double]): Double = {
+  private def scoreRow(features: Array[Double]): Double = {
     val context = new DaalContext()
     var prediction: Double = Double.NaN
 
@@ -259,7 +259,7 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
    */
   override def score(row: Array[Any]): Array[Any] = {
     val features: Array[Double] = row.map(y => ScoringModelUtils.asDouble(y))
-    val prediction = predict(features)
+    val prediction = scoreRow(features)
 
     row :+ (prediction)
   }
@@ -275,11 +275,7 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
    * @return fields containing the input names and their data types
    */
   override def input(): Array[Field] = {
-    var input = Array[Field]()
-    trainingObservationColumns.foreach { name =>
-      input = input :+ Field(name, "Double")
-    }
-    input
+    trainingObservationColumns.map(name => Field(name, "Double")).toArray
   }
 
   /**

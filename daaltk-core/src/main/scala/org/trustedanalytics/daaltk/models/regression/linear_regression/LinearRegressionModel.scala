@@ -273,11 +273,7 @@ case class LinearRegressionModel(valueColumnTrain: String,
    * @return fields containing the input names and their data types
    */
   override def input(): Array[Field] = {
-    var input = Array[Field]()
-    observationColumnsTrain.foreach { name =>
-      input = input :+ Field(name, "Double")
-    }
-    input
+    observationColumnsTrain.map(name => Field(name, "Double")).toArray
   }
 
   /**

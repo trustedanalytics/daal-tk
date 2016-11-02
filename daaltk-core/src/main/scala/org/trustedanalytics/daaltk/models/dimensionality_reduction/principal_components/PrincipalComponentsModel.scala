@@ -248,11 +248,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
    * @return fields containing the input names and their data types
    */
   override def input(): Array[Field] = {
-    var input = Array[Field]()
-    svdData.observationColumns.foreach { name =>
-      input = input :+ Field(name, "Double")
-    }
-    input
+    svdData.observationColumns.map(name => Field(name, "Double")).toArray
   }
 
   /**

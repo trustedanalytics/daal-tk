@@ -17,7 +17,7 @@ trait DaalModel {
   def exportToMar(sc: SparkContext, marSavePath: String): String = {
     var tmpDir: Path = null
     try {
-      tmpDir = Files.createTempDirectory("daaltk-scoring-model")
+      tmpDir = Files.createTempDirectory("sparktk-scoring-model")
       save(sc, tmpDir.toString)
       val sourcePath = this.getClass.getProtectionDomain.getCodeSource.getLocation.toString
       ScoringModelUtils.saveToMar(marSavePath, this.getClass.getName, tmpDir, classOf[DaalTkModelAdapter].getName, Some(sourcePath))

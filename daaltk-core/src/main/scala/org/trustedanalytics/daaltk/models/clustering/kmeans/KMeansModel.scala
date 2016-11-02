@@ -231,11 +231,7 @@ case class KMeansModel private[kmeans] (trainingObservationColumns: Seq[String],
    * @return fields containing the input names and their data types
    */
   override def input(): Array[Field] = {
-    var input = Array[Field]()
-    trainingObservationColumns.foreach { name =>
-      input = input :+ Field(name, "Double")
-    }
-    input
+    trainingObservationColumns.map(name => Field(name, "Double")).toArray
   }
 
   /**
