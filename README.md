@@ -16,7 +16,7 @@ provides an API for creating and manipulating frames of data.
 
 Execute the following script to install the necessary [DAAL](https://github.com/trustedanalytics/daal-install/tree/daal-2016.2.181) binaries in your home directory
 ```
-curl https://raw.githubusercontent.com/trustedanalytics/daal-install/daal-2016.2.181/install.sh | bash /dev/stdin
+curl https://raw.githubusercontent.com/trustedanalytics/daal-utils/0.1.0-daal-2016.2.181/install.sh | bash /dev/stdin
 ```
 
 If you already have the DAAL binaries available on your machine make sure `LD_LIBRARY_PATH` environment variable is set to their location.
