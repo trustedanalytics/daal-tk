@@ -4,11 +4,16 @@ import org.apache.commons.lang.StringUtils
 import org.apache.spark.SparkContext
 import org.json4s.JsonAST.JValue
 import org.trustedanalytics.daaltk.DaalUtils
+import org.trustedanalytics.daaltk.models.DaalTkModelAdapter
 import org.trustedanalytics.sparktk.TkContext
 import org.trustedanalytics.sparktk.frame.Frame
 import org.trustedanalytics.sparktk.frame.internal.rdd.FrameRdd
 import org.trustedanalytics.sparktk.saveload.{ SaveLoad, TkSaveLoad, TkSaveableObject }
 import org.apache.spark.mllib.evaluation.RegressionMetrics
+import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
+import org.trustedanalytics.sparktk.models.ScoringModelUtils
+import org.trustedanalytics.daaltk.models.DaalModel
+import breeze.linalg.{ DenseVector => BreezeDenseVector }
 
 object LinearRegressionModel extends TkSaveableObject {
   /**
@@ -137,7 +142,7 @@ case class LinearRegressionModel(valueColumnTrain: String,
                                  meanSquaredError: Double,
                                  r2: Double,
                                  rootMeanSquaredError: Double,
-                                 serializedModel: List[Byte]) extends Serializable {
+                                 serializedModel: List[Byte]) extends Serializable with Model with DaalModel {
 
   /**
    * Array of observation columns used during training
@@ -226,7 +231,7 @@ case class LinearRegressionModel(valueColumnTrain: String,
    * @param sc active SparkContext
    * @param path save to path
    */
-  def save(sc: SparkContext, path: String): Unit = {
+  override def save(sc: SparkContext, path: String): Unit = {
     val tkMetadata = LinearRegressionModelTkMetaData(valueColumnTrain,
       observationColumnsTrain,
       intercept,
@@ -238,6 +243,45 @@ case class LinearRegressionModel(valueColumnTrain: String,
       rootMeanSquaredError,
       serializedModel)
     TkSaveLoad.saveTk(sc, path, LinearRegressionModel.formatId, LinearRegressionModel.currentFormatVersion, tkMetadata)
+  }
+
+  /**
+   * Scores the given row using the trained DAAL Linear Regression model
+   *
+   * @param row Row of input data
+   * @return Input row, plus the score
+   */
+  override def score(row: Array[Any]): Array[Any] = {
+    val breezeWeights = new BreezeDenseVector[Double](weights.toArray)
+    val features: Array[Double] = row.map(y => ScoringModelUtils.asDouble(y))
+    val breezeFeatures = new BreezeDenseVector[Double](features)
+    val prediction = breezeWeights.dot(breezeFeatures) + intercept
+    row :+ (prediction)
+  }
+
+  /**
+   * @return DAAL Linear Regression model metadata
+   */
+  override def modelMetadata(): ModelMetaData = {
+    new ModelMetaData("Intel DAAL Linear Regression Model",
+      classOf[LinearRegressionModel].getName,
+      classOf[DaalTkModelAdapter].getName,
+      Map())
+  }
+
+  /**
+   * @return fields containing the input names and their data types
+   */
+  override def input(): Array[Field] = {
+    observationColumnsTrain.map(name => Field(name, "Double")).toArray
+  }
+
+  /**
+   * @return fields containing the input names and their data types along with the output and its data type
+   */
+  override def output(): Array[Field] = {
+    var output = input()
+    output :+ Field("score", "Double")
   }
 }
 

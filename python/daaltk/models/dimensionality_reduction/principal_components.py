@@ -6,6 +6,7 @@ from sparktk.frame.frame import Frame
 from sparktk.propobj import PropertiesObject
 from sparktk import TkContext
 from daaltk import Daal
+from sparktk.arguments import require_type
 
 __all__ = ['train','load','PrincipalComponentsModel']
 
@@ -150,6 +151,34 @@ class PrincipalComponentsModel(PropertiesObject):
         [4]   0.673930077524
         </skip>
 
+    The trained model can be saved and restored:
+
+        >>> model.save("sandbox/daal_pca")
+
+        >>> restored_model = tc.load("sandbox/daal_pca")
+        >>> restored_model.columns
+        [u'1', u'2', u'3', u'4', u'5', u'6']
+    <skip>
+        >>> restored_model.column_means
+        [2.92, 1.48, 0.4, 1.3, 0.7, 0.52]
+    </skip>
+    <hide>
+        >>> # check that column means are almost equal to the original model
+        >>> for x, y in zip(restored_model.column_means, model.column_means):
+        ...   assert(round(x, 3) == round(y, 3))
+    </hide>
+        >>> restored_model.k
+        3
+
+    The trained model can also be exported to a .mar file, to be used with the scoring engine:
+
+        >>> canonical_path = model.export_to_mar("sandbox/daalPrincipalComponents.mar")
+
+    <hide>
+        >>> import os
+        >>> assert(os.path.isfile(canonical_path))
+    </hide>
+
     """
 
     def __init__(self, tc, scala_model):
@@ -246,3 +275,16 @@ class PrincipalComponentsModel(PropertiesObject):
         :param path: Path to save
         """
         self._scala.save(self._tc._scala_sc, path)
+
+    def export_to_mar(self, path):
+        """
+        Exports the trained model as a model archive (.mar) to the specified path
+
+        Parameters
+        ----------
+
+        :param path: (str) Path to save the trained model
+        :return: (str) Full path to the saved .mar file
+        """
+        require_type.non_empty_str(path, "path")
+        return self._scala.exportToMar(self._tc._scala_sc, path)

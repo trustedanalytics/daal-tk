@@ -96,6 +96,30 @@ class KMeansModelTest extends TestingSparkContextWordSpec with Matchers {
       thrown = the[Exception] thrownBy model.predict(frame, Some(List("bogus")))
       assert(thrown.getMessage.contains("Invalid column name bogus provided"))
     }
+
+    "return a prediction when calling score on a trained model" in {
+      val rdd = sparkContext.parallelize(frameData)
+      val frame = new Frame(rdd, schema)
+
+      // model train
+      val model = KMeansModel.train(frame, List("data"), None, k = 2, maxIterations = 20)
+
+      // Find out which cluster has the majority (we will score with a value in that group)
+      val clusterIndex = model.clusterSize.indexOf(9)
+      val expectedCluster = model.clusters(clusterIndex).split(":")(1).toInt
+
+      // Score
+      val inputData = 2.0
+      val inputArray = Array[Any](inputData)
+      assert(model.input().length == inputArray.length)
+      val scoreResult = model.score(inputArray)
+      assert(scoreResult.length == model.output().length)
+      assert(scoreResult(0) == inputData)
+      scoreResult(1) match {
+        case prediction: Integer => assert(prediction == expectedCluster)
+        case _ => throw new RuntimeException(s"Expected prediction to be an Integer but is ${scoreResult(1).getClass.getSimpleName}")
+      }
+    }
   }
 
 }

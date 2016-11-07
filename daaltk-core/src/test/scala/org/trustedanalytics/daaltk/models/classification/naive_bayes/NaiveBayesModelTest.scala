@@ -112,6 +112,29 @@ class NaiveBayesModelTest extends TestingSparkContextWordSpec with Matchers {
       thrown = the[Exception] thrownBy model.predict(frame, Some(List("bogus", "Dim_2")))
       assert(thrown.getMessage.contains("Invalid column name bogus provided"))
     }
+
+    "return a prediction when calling score on a trained model" in {
+      val rdd = sparkContext.parallelize(frameData)
+      val frame = new Frame(rdd, schema)
+
+      // Model training
+      val model = NaiveBayesModel.train(frame, "Class", List("Dim_1", "Dim_2"), 2)
+
+      // Score
+      val dim1 = 19.8446136104
+      val dim2 = 2.2985856384
+      val inputArray = Array[Any](dim1, dim2)
+      assert(model.input().length == inputArray.length)
+      val scoreResult = model.score(inputArray)
+      val expectedPrediction = 0.0
+      assert(scoreResult.length == model.output().length)
+      assert(scoreResult(0) == dim1)
+      assert(scoreResult(1) == dim2)
+      scoreResult(2) match {
+        case prediction: Double => assert(prediction == expectedPrediction)
+        case _ => throw new RuntimeException(s"Expected prediction to be a Double but is ${scoreResult(2).getClass.getSimpleName}")
+      }
+    }
   }
 
 }

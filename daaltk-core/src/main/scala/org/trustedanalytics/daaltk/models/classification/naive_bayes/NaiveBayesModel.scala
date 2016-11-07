@@ -1,17 +1,24 @@
 package org.trustedanalytics.daaltk.models.classification.naive_bayes
 
+import com.intel.daal.algorithms.ModelSerializer
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.SparkContext
+import org.trustedanalytics.daaltk.models.{ DaalModel, DaalTkModelAdapter }
 import org.trustedanalytics.sparktk.TkContext
 import org.trustedanalytics.sparktk.frame._
 import org.trustedanalytics.sparktk.frame.internal.RowWrapper
 import org.trustedanalytics.sparktk.frame.internal.rdd.{ RowWrapperFunctions, FrameRdd, ScoreAndLabel }
+import org.trustedanalytics.sparktk.models.ScoringModelUtils
 import org.trustedanalytics.sparktk.saveload.{ SaveLoad, TkSaveLoad, TkSaveableObject }
-import com.intel.daal.algorithms.multinomial_naive_bayes.Model
 import org.trustedanalytics.sparktk.frame.internal.ops.classificationmetrics.{ ClassificationMetricsFunctions, ClassificationMetricValue }
-
+import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
 import scala.language.implicitConversions
 import org.json4s.JsonAST.JValue
+import java.lang
+import com.intel.daal.services.DaalContext
+import com.intel.daal.algorithms.classifier.prediction.{ ModelInputId, NumericTableInputId, PredictionResultId }
+import com.intel.daal.algorithms.multinomial_naive_bayes.prediction.{ PredictionMethod, PredictionBatch }
+import com.intel.daal.data_management.data.HomogenNumericTable
 
 object NaiveBayesModel extends TkSaveableObject {
   /**
@@ -114,7 +121,7 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
                                                  numClasses: Int,
                                                  classLogPrior: Array[Double],
                                                  featureLogProb: Array[Array[Double]],
-                                                 classPrior: Option[Array[Double]] = None) extends Serializable {
+                                                 classPrior: Option[Array[Double]] = None) extends Serializable with Model with DaalModel {
 
   implicit def rowWrapperToRowWrapperFunctions(rowWrapper: RowWrapper): RowWrapperFunctions = {
     new RowWrapperFunctions(rowWrapper)
@@ -145,6 +152,46 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
       frameRdd, naiveBayesColumns, predictColumn).predict()
 
     new Frame(predictFrame.rdd, predictFrame.schema)
+  }
+
+  /**
+   * Predict label using Intel DAAL naive bayes model
+   * @param features Array with input features
+   * @return score
+   */
+  private def scoreRow(features: Array[Double]): Double = {
+    val context = new DaalContext()
+    var prediction: Double = Double.NaN
+
+    try {
+      val predictAlgorithm = new PredictionBatch(context, classOf[lang.Double],
+        PredictionMethod.defaultDense, numClasses)
+      val testTable = new HomogenNumericTable(context, features, features.length, 1L)
+      val trainedModel = ModelSerializer.deserializeNaiveBayesModel(context, serializedModel.toArray)
+      predictAlgorithm.input.set(NumericTableInputId.data, testTable)
+      predictAlgorithm.input.set(ModelInputId.model, trainedModel)
+
+      val alphaParameter = DaalNaiveBayesParameters.getAlphaParameter(context,
+        lambdaParameter, trainingObservationColumns.length)
+      predictAlgorithm.parameter.setAlpha(alphaParameter)
+      if (classPrior.isDefined) {
+        val priorParameter = DaalNaiveBayesParameters.getClassPriorParameter(context, classPrior.get)
+        predictAlgorithm.parameter.setPriorClassEstimates(priorParameter)
+      }
+
+      /* Compute and retrieve prediction results */
+      val partialResult = predictAlgorithm.compute()
+
+      val predictions = partialResult.get(PredictionResultId.prediction).asInstanceOf[HomogenNumericTable]
+      prediction = predictions.getDoubleArray.head
+    }
+    catch {
+      case ex: Exception => throw new RuntimeException("Could not score model:", ex)
+    }
+    finally {
+      context.dispose()
+    }
+    prediction
   }
 
   /**
@@ -199,10 +246,44 @@ case class NaiveBayesModel private[naive_bayes] (serializedModel: List[Byte],
    * @param sc active SparkContext
    * @param path save to path
    */
-  def save(sc: SparkContext, path: String): Unit = {
+  override def save(sc: SparkContext, path: String): Unit = {
     val tkMetadata = NaiveBayesModelTkMetaData(serializedModel, labelColumn, trainingObservationColumns, lambdaParameter,
       numClasses, classLogPrior, featureLogProb, classPrior)
     TkSaveLoad.saveTk(sc, path, NaiveBayesModel.formatId, NaiveBayesModel.currentFormatVersion, tkMetadata)
+  }
+
+  /**
+   * Scores the given row using the trained DAAL Naive Bayes model
+   * @param row Row of input data
+   * @return Input row, plus the score
+   */
+  override def score(row: Array[Any]): Array[Any] = {
+    val features: Array[Double] = row.map(y => ScoringModelUtils.asDouble(y))
+    val prediction = scoreRow(features)
+
+    row :+ (prediction)
+  }
+
+  /**
+   * @return DAAL Naive Bayes model metadata
+   */
+  override def modelMetadata(): ModelMetaData = {
+    new ModelMetaData("Intel DAAL Naive Bayes Model", classOf[NaiveBayesModel].getName, classOf[DaalTkModelAdapter].getName, Map())
+  }
+
+  /**
+   * @return fields containing the input names and their data types
+   */
+  override def input(): Array[Field] = {
+    trainingObservationColumns.map(name => Field(name, "Double")).toArray
+  }
+
+  /**
+   * @return fields containing the input names and their data types along with the output and its data type
+   */
+  override def output(): Array[Field] = {
+    var output = input()
+    output :+ Field("score", "Double")
   }
 }
 

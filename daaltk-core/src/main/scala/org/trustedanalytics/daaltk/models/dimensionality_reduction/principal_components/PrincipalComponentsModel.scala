@@ -1,18 +1,22 @@
 package org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components
 
+import breeze.linalg.DenseVector
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
 import org.json4s.JsonAST.JValue
+import org.trustedanalytics.daaltk.models.{ DaalModel, DaalTkModelAdapter }
 import org.trustedanalytics.sparktk.TkContext
 import org.trustedanalytics.sparktk.frame._
 import org.trustedanalytics.sparktk.frame.internal.rdd.FrameRdd
 import org.trustedanalytics.sparktk.models.MatrixImplicits._
 import org.trustedanalytics.sparktk.models.dimreduction.pca.PrincipalComponentsFunctions
 import org.trustedanalytics.sparktk.saveload.{ SaveLoad, TkSaveLoad, TkSaveableObject }
-import org.apache.spark.mllib.stat.{ MultivariateStatisticalSummary, Statistics }
+import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
+import org.trustedanalytics.sparktk.models.ScoringModelUtils
+import org.apache.spark.mllib.linalg.{ DenseVector => MllibDenseVector, DenseMatrix => MllibDenseMatrix }
 
 object PrincipalComponentsModel extends TkSaveableObject {
   /**
@@ -66,8 +70,8 @@ object PrincipalComponentsModel extends TkSaveableObject {
     val svdData = SvdData(m.k,
       m.observationColumns,
       m.meanCentered,
-      new DenseVector(m.meanVector),
-      new DenseVector(m.singularValues),
+      new MllibDenseVector(m.meanVector),
+      new MllibDenseVector(m.singularValues),
       new DenseMatrix(m.vFactorRows, m.vFactorCols, m.vFactor),
       m.leftSingularMatrix)
 
@@ -91,7 +95,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
  *
  * @param svdData Model data for Intel DAAL Singular Value Decomposition (SVD)
  */
-case class PrincipalComponentsModel(svdData: SvdData) extends Serializable {
+case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with Model with DaalModel {
   /**
    * Observation columns from the training data
    */
@@ -194,7 +198,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable {
    * @param sc active SparkContext
    * @param path save to path
    */
-  def save(sc: SparkContext, path: String): Unit = {
+  override def save(sc: SparkContext, path: String): Unit = {
     val tkMetadata = PrincipalComponentsTkMetaData(svdData.k,
       svdData.observationColumns,
       svdData.meanCentered,
@@ -205,6 +209,55 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable {
       svdData.vFactor.numCols,
       svdData.leftSingularMatrix)
     TkSaveLoad.saveTk(sc, path, PrincipalComponentsModel.formatId, PrincipalComponentsModel.currentFormatVersion, tkMetadata)
+  }
+
+  /**
+   * Scores the given row using the trained DAAL Principal Components model
+   *
+   * @param row Row of input data
+   * @return Input row, plus the score
+   */
+  override def score(row: Array[Any]): Array[Any] = {
+    val x: Array[Double] = row.map(value => ScoringModelUtils.asDouble(value))
+    var inputVector = new MllibDenseVector(x)
+    if (meanCentered) {
+      val meanCenteredVector: Array[Double] = (new DenseVector(x) - new DenseVector(columnMeans.toArray)).toArray
+      inputVector = new MllibDenseVector(meanCenteredVector)
+    }
+    val y = new MllibDenseMatrix(1, inputVector.size, inputVector.toArray).multiply(svdData.vFactor.asInstanceOf[MllibDenseMatrix])
+    val yArray: Array[Double] = y.values
+    var t_squared_index: Double = 0.0
+    for (i <- 0 until k) {
+      if (singularValues(i) > 0)
+        t_squared_index += ((yArray(i) * yArray(i)) / (singularValues(i) * singularValues(i)))
+    }
+    row ++ Array(y.values.toList, t_squared_index)
+  }
+
+  /**
+   * @return DAAL Principal Components model metadata
+   */
+  override def modelMetadata(): ModelMetaData = {
+    new ModelMetaData("Intel DAAL Principal Components Model",
+      classOf[PrincipalComponentsModel].getName,
+      classOf[DaalTkModelAdapter].getName,
+      Map())
+  }
+
+  /**
+   * @return fields containing the input names and their data types
+   */
+  override def input(): Array[Field] = {
+    svdData.observationColumns.map(name => Field(name, "Double")).toArray
+  }
+
+  /**
+   * @return fields containing the input names and their data types along with the output and its data type
+   */
+  override def output(): Array[Field] = {
+    var output = input()
+    output = output :+ Field("principal_components", "List[Double]")
+    output :+ Field("t_squared_index", "Double")
   }
 }
 

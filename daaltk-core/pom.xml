@@ -87,6 +87,15 @@
             <groupId>org.trustedanalytics</groupId>
             <artifactId>sparktk-core</artifactId>
         </dependency>
+        <!-- scoring dependencies -->
+        <dependency>
+            <groupId>org.trustedanalytics</groupId>
+            <artifactId>model-archive-format</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.trustedanalytics</groupId>
+            <artifactId>model-archive-interfaces</artifactId>
+        </dependency>
         <!--  Intel DAAL  -->
         <dependency>
             <groupId>com.intel.daal</groupId>
