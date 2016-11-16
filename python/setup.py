@@ -7,10 +7,10 @@ import time
 install_reqs = parse_requirements("requirements.txt", session=False)
 reqs = [str(ir.req) for ir in install_reqs]
 
-POST=os.getenv("DAALTK_POSTTAG","dev")
-BUILD=os.getenv("DAALTK_BUILDNUMBER", "0")
+POST="DEV"
+BUILD="0"
 
-VERSION=os.getenv("DAALTK_VERSION","0.7")
+VERSION="0.7"
 
 setup(
     # Application name:

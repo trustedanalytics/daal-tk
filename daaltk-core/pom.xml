@@ -48,21 +48,6 @@
 
                 <executions>
                     <execution>
-                        <id>executable-shells</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>chmod</executable>
-                            <workingDirectory>${basedir}</workingDirectory>
-                            <arguments>
-                                <argument>+x</argument>
-                                <argument>package.sh</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>package-core</id>
                         <phase>package</phase>
                         <goals>

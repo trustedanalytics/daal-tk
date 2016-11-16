@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.trustedanalytics</groupId>
         <artifactId>tap-root</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.3</version>
     </parent>
 
   <artifactId>daal-tk</artifactId>
@@ -66,6 +66,7 @@
     </repositories>
 
     <properties>
+        <sparktk-core.version>master-SNAPSHOT</sparktk-core.version>
         <artifactIdExcludesHive>hive-exec,hive-metastore</artifactIdExcludesHive>
         <artifactIdExcludesHadoop>hadoop-aws,hadoop-annotations,hadoop-mapreduce-client-common,hadoop-mapreduce-client-core,hadoop-mapreduce-client-jobclient,hadoop-mapreduce-client-shuffle,hadoop-yarn-api,hadoop-yarn-client,hadoop-yarn-common,hadoop-yarn-server-common,hadoop-yarn-server-web-proxy</artifactIdExcludesHadoop>
         <artifactIdExcludesSpark>spark-hive_${tap.scala.short.version},spark-yarn_${tap.scala.short.version},spark-core_${tap.scala.short.version},spark-mllib_${tap.scala.short.version},spark-sql_${tap.scala.short.version},spark-graphx_${tap.scala.short.version},spark-catalyst_${tap.scala.short.version},spark-launcher_${tap.scala.short.version},spark-network-common_${tap.scala.short.version},spark-network-shuffle_${tap.scala.short.version},spark-streaming_${tap.scala.short.version},spark-unsafe_${tap.scala.short.version}</artifactIdExcludesSpark>
@@ -75,34 +76,12 @@
         <!--org.apache.hadoop,org.apache.hbase,org.apache.hive-->
     </properties>
 
-
+    <modules>
+        <module>daaltk-core</module>
+        <module>python</module>
+    </modules>
 
     <profiles>
-        <profile>
-            <id>modules-all</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>!NEVERSETME</name>
-                </property>
-            </activation>
-            <modules>
-                <module>daaltk-core</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>python-unit-tests</id>
-            <activation>
-                <property>
-                    <name>!skipTests</name>
-                </property>
-            </activation>
-            <modules>
-                <module>python</module>
-            </modules>
-        </profile>
-
         <profile>
             <id>integration-tests</id>
             <activation>
@@ -132,7 +111,7 @@
                             <inherited>true</inherited>
                             <groupId>net.alchim31.maven</groupId>
                             <artifactId>scala-maven-plugin</artifactId>
-                            <version>3.1.6</version>
+                            <version>3.2.2</version>
                             <executions>
                                 <execution>
                                     <id>compile</id>
@@ -574,7 +553,7 @@
             <dependency>
                 <groupId>org.trustedanalytics</groupId>
                 <artifactId>sparktk-core</artifactId>
-                <version>master-SNAPSHOT</version>
+                <version>${sparktk-core.version}</version>
             </dependency>
             <!-- scoring dependencies -->
             <dependency>

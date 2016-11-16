@@ -2,7 +2,8 @@
 
 WD=target/
 
-MODULE=daal-tk
+
+MODULE="daaltk-core-$VERSION.$POST_TAG$BUILD_NUMBER"
 
 pushd $WD
 
