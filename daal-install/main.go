@@ -48,7 +48,7 @@ func main() {
 	//unzip sparktk-core
 	sparktkCore, err := Asset(SPARKTK_CORE_PKG)
 	if err != nil {
-		fmt.Println("Asset not found")
+		fmt.Println("Asset not found ", SPARKTK_CORE_PKG)
 	}
 	fmt.Printf("Extract Spark-tk to %s \n", HOME)
 	unzip(HOME, sparktkCore)
@@ -57,7 +57,7 @@ func main() {
 	//install sparktk python package
 	sparktkPython, err := Asset(SPARKTK_PYTHON_PKG)
 	if err != nil {
-		fmt.Println("Asset not found")
+		fmt.Println("Asset not found ", SPARKTK_PYTHON_PKG)
 	}
 	fmt.Println("Install Spark-tk python package ")
 	saveFile(SPARKTK_PYTHON_PKG, sparktkPython)
@@ -67,7 +67,7 @@ func main() {
 	//unzip daaltk-core
 	daaltkCore, err := Asset(DAALTK_CORE_PKG)
 	if err != nil {
-		fmt.Println("Asset not found")
+		fmt.Println("Asset not found ", DAALTK_CORE_PKG)
 	}
 	fmt.Printf("Extract Daal-tk to %s \n", HOME)
 	unzip(HOME, daaltkCore)
@@ -76,7 +76,7 @@ func main() {
 	//install daaltk python package
 	daaltkPython, err := Asset(DAALTK_PYTHON_PKG)
 	if err != nil {
-		fmt.Println("Asset not found")
+		fmt.Println("Asset not found ", DAALTK_PYTHON_PKG)
 	}
 	fmt.Println("Install Daal-tk python package ")
 	saveFile(DAALTK_PYTHON_PKG, daaltkPython)
@@ -86,7 +86,7 @@ func main() {
 	*/
 	daal, err := Asset(DAAL_PKG)
 	if err != nil {
-		fmt.Println("Asset not found")
+		fmt.Println("Asset not found ", DAAL_PKG)
 	}
 	fmt.Printf("Extract Daal to %s \n", HOME)
 	unzip(HOME, daal)
