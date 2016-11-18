@@ -15,5 +15,5 @@
 #  limitations under the License.
 #
 
-echo $GOPATH/bin/go-bindata $@
+echo $GOPATH/bin/go-bindata -prefix "`pwd/`" $@
 $GOPATH/bin/go-bindata -prefix "`pwd/`" $@
