@@ -65,6 +65,21 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>python-update-version</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>bash</executable>
+
+                                    <arguments>
+                                        <argument>update-version.sh</argument>
+                                    </arguments>
+
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>python-package</id>
                                 <phase>package</phase>
                                 <goals>

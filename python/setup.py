@@ -26,7 +26,6 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 POST="DEV"
 BUILD="0"
-
 VERSION="0.7"
 
 setup(
