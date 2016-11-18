@@ -23,6 +23,7 @@ echo ==requirements==
 IFS=$'\n'
 for req in `find . -iname "requirements" `
 do
+	echo $req
 	for dep in `cat $req`
 	do
 		echo go get -v $dep
