@@ -21,12 +21,9 @@ rm -rf $GOPATH/bin
 
 echo ==requirements==
 IFS=$'\n'
-for req in `find . -iname "requirements" `
-do
-	echo $req
-	for dep in `cat $req`
+	
+	for dep in `cat ./requirements`
 	do
 		echo go get -v $dep
 		go get -v $dep
 	done
-done
