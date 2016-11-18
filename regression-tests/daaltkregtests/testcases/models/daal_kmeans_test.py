@@ -1,7 +1,5 @@
 """ test cases for the Daal kmeans clustering algorithm """
 import unittest
-#from sparktk import TkContext
-import daaltk
 from daaltkregtests.lib import daaltk_test
 
 
@@ -16,9 +14,6 @@ class KMeansClustering(daaltk_test.DaalTKTestCase):
                   ("Vec4", float),
                   ("Vec5", float),
                   ("term", str)]
-        #self.context = TkContext(other_libs=[daaltk])
-        #self.train_dataset = "hdfs://master.organa.cluster.gao:8020/user/hadoop/qa_data/kmeans_train.csv"
-        #self.test_dataset = "hdfs://master.organa.cluster.gao:8020/user/hadoop/qa_data/kmeans_test.csv"
         self.train_dataset = self.get_file("kmeans_train.csv")
         self.test_dataset = self.get_file("kmeans_test.csv")
         self.frame_train = self.context.frame.import_csv(
