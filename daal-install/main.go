@@ -92,10 +92,16 @@ func main() {
 	unzip(HOME, daal)
 	exports = append(exports, exportEnv("LD_LIBRARY_PATH", fmt.Sprintf("%s/daal-%s:$LD_LIBRARY_PATH", HOME, DAAL_VERSION)))
 
-	fmt.Println("The following exports must be set in your environment.")
-	for _, export := range exports {
-		fmt.Println(export)
-	}
+	f, err := os.Create("daaltk.sh")
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("The following exports must be set in your environment. You can source daaltk.sh")
+    for _, export := range exports {
+        fmt.Println(export)
+        f.WriteString(export + "\n")
+    }
+    f.Close()
 }
 
 func checkEnv() {
