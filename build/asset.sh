@@ -16,8 +16,8 @@
 #
 
 
-JAVA_PATH=$(find $BASE_DIR/$SOURCE_DIR/sparktk-core/ -name "sparktk-core*.zip")
-PIP_PATH=$(find $BASE_DIR/$SOURCE_DIR/python/ -name "sparktk-*.tar.gz")
+JAVA_PATH=$(find $BASE_DIR/$SOURCE_DIR/daaltk-core/ -name "daaltk-core*.zip")
+PIP_PATH=$(find $BASE_DIR/$SOURCE_DIR/python/ -name "daaltk-*.tar.gz")
 DAAL_INSTALL=$(find $BASE_DIR/$SOURCE_DIR/ -name "daal-install")
 LICENSES_PATH=$(find `pwd` -name "licenses*.zip")
 
