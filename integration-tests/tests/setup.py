@@ -51,7 +51,7 @@ def tc(request):
                 raise RuntimeError("SPARKTK_HOME must be defined.")
 
             sc = create_sc(other_libs=[daaltk],
-                           master='local[10]',
+                           master='local[2]',
                            sparktk_home=sparktk_dir,
                            app_name="pytest-pyspark-local-testing",
                            extra_conf_dict={"spark.hadoop.fs.default.name": "file:///"}
