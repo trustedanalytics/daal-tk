@@ -16,33 +16,14 @@
 #
 
 
-WD=target/
+rm -rf $GOPATH/src
+rm -rf $GOPATH/bin
 
-
-MODULE="daaltk-core-$VERSION.$POST_TAG$BUILD_NUMBER"
-
-pushd $WD
-
-	mkdir -p $MODULE/dependencies
-
-	cp daaltk-core*.jar $MODULE/
-
-	for source in `find \`pwd\` -iname "*sources.jar"`
+echo ==requirements==
+IFS=$'\n'
+	
+	for dep in `cat ./requirements`
 	do
-	if [ "$source" != "" ]; then
-	echo remove source file $source
-	rm  $source
-	fi
+		echo go get -v $dep
+		go get -v $dep
 	done
-
-	cp -Rv dependencies/* $MODULE/dependencies/
-
-	pushd $MODULE
-	ln -s dependencies lib
-	popd
-
-	zip --symlinks -r $MODULE.zip $MODULE
-
-	rm -rf $MODULE
-
-popd
