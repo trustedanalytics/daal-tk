@@ -1,13 +1,13 @@
-package org.trustedanalytics.daaltk.models.dimensionality_reduction
+package org.trustedanalytics.daaltk.models.dimreduction
 
 import org.apache.spark.sql.catalyst.expressions.GenericRow
 import org.apache.spark.sql.Row
 import org.scalatest.Matchers
-import org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PrincipalComponentsModel
+import org.trustedanalytics.daaltk.models.dimreduction.pca.PcaModel
 import org.trustedanalytics.daaltk.testutils.TestingSparkContextWordSpec
-import org.trustedanalytics.sparktk.frame.{ FrameSchema, Frame, DataTypes, Column }
+import org.trustedanalytics.sparktk.frame.{ Column, DataTypes, Frame, FrameSchema }
 
-class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matchers {
+class PcaModelTest extends TestingSparkContextWordSpec with Matchers {
 
   val frameData: Array[Row] = Array(
     new GenericRow(Array[Any](2.6, 1.7, 0.3, 1.5, 0.8, 0.7)),
@@ -29,8 +29,8 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
       val frame = new Frame(rdd, schema)
 
       // model train
-      val model = PrincipalComponentsModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(3))
-      model shouldBe a[PrincipalComponentsModel]
+      val model = PcaModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(3))
+      model shouldBe a[PcaModel]
       assert(model.columnMeans.length == schema.columns.length)
 
       // predict
@@ -46,22 +46,22 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
       val frame = new Frame(rdd, schema)
 
       // null frame
-      var thrown = the[Exception] thrownBy PrincipalComponentsModel.train(null, List("1", "2", "3", "4", "5", "6"), true, Some(3))
+      var thrown = the[Exception] thrownBy PcaModel.train(null, List("1", "2", "3", "4", "5", "6"), true, Some(3))
       assert(thrown.getMessage.contains("frame is required"))
 
       // invalid observation column
-      thrown = the[Exception] thrownBy PrincipalComponentsModel.train(frame, List("1", "bogus", "3", "4", "5", "6"), true, Some(3))
+      thrown = the[Exception] thrownBy PcaModel.train(frame, List("1", "bogus", "3", "4", "5", "6"), true, Some(3))
       assert(thrown.getMessage.contains("column bogus was not found"))
 
       // invalid k (greater than number of observation columns
-      thrown = the[Exception] thrownBy PrincipalComponentsModel.train(frame, List("1", "bogus", "3", "4", "5", "6"), true, Some(8))
+      thrown = the[Exception] thrownBy PcaModel.train(frame, List("1", "bogus", "3", "4", "5", "6"), true, Some(8))
       assert(thrown.getMessage.contains("k must be less than or equal to number of observation columns"))
     }
 
     "throw an exception for invalid predict arguments" in {
       val rdd = sparkContext.parallelize(frameData)
       val frame = new Frame(rdd, schema)
-      val model = PrincipalComponentsModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(3))
+      val model = PcaModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(3))
 
       // null frame
       var thrown = the[Exception] thrownBy model.predict(null, true, true, Some(List("1", "2", "3", "4", "5", "6")), Some(2))
@@ -82,7 +82,7 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
 
       // model train
       val k = 3
-      val model = PrincipalComponentsModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(k))
+      val model = PcaModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(k))
 
       // Score
       val inputArray = Array[Any](2.6, 1.7, 0.3, 1.5, 0.8, 0.7)

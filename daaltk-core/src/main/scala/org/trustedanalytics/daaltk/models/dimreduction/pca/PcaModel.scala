@@ -1,4 +1,4 @@
-package org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components
+package org.trustedanalytics.daaltk.models.dimreduction.pca
 
 import breeze.linalg.DenseVector
 import org.apache.commons.lang.StringUtils
@@ -18,7 +18,7 @@ import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
 import org.trustedanalytics.sparktk.models.ScoringModelUtils
 import org.apache.spark.mllib.linalg.{ DenseVector => MllibDenseVector, DenseMatrix => MllibDenseMatrix }
 
-object PrincipalComponentsModel extends TkSaveableObject {
+object PcaModel extends TkSaveableObject {
   /**
    * Current format version for model save/load
    */
@@ -45,7 +45,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
   def train(frame: Frame,
             observationColumns: Seq[String],
             meanCentered: Boolean = true,
-            k: Option[Int] = None): PrincipalComponentsModel = {
+            k: Option[Int] = None): PcaModel = {
     require(frame != null, "frame is required")
     require(observationColumns != null && observationColumns.length > 0, "observations columns must not be null nor empty.")
     require(observationColumns.forall(StringUtils.isNotEmpty(_)), "observation columns names cannot be null or empty")
@@ -56,7 +56,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
     val frameRdd = new FrameRdd(frame.schema, frame.rdd)
     val trainK = k.getOrElse(observationColumns.length)
 
-    PrincipalComponentsModel(SvdAlgorithm(frameRdd, observationColumns, meanCentered).compute(trainK, computeU = false))
+    PcaModel(SvdAlgorithm(frameRdd, observationColumns, meanCentered).compute(trainK, computeU = false))
   }
 
   /**
@@ -76,17 +76,18 @@ object PrincipalComponentsModel extends TkSaveableObject {
       m.leftSingularMatrix)
 
     // Create PrincipalComponentsModel to return
-    PrincipalComponentsModel(svdData)
+    PcaModel(svdData)
   }
 
   /**
    * Load a DAAL prinicpal components model from the given path
+   *
    * @param tc TkContext
    * @param path location
    * @return
    */
-  def load(tc: TkContext, path: String): PrincipalComponentsModel = {
-    tc.load(path).asInstanceOf[PrincipalComponentsModel]
+  def load(tc: TkContext, path: String): PcaModel = {
+    tc.load(path).asInstanceOf[PcaModel]
   }
 }
 
@@ -95,7 +96,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
  *
  * @param svdData Model data for Intel DAAL Singular Value Decomposition (SVD)
  */
-case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with Model with DaalModel {
+case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalModel {
   /**
    * Observation columns from the training data
    */
@@ -208,7 +209,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       svdData.vFactor.numRows,
       svdData.vFactor.numCols,
       svdData.leftSingularMatrix)
-    TkSaveLoad.saveTk(sc, path, PrincipalComponentsModel.formatId, PrincipalComponentsModel.currentFormatVersion, tkMetadata)
+    TkSaveLoad.saveTk(sc, path, PcaModel.formatId, PcaModel.currentFormatVersion, tkMetadata)
   }
 
   /**
@@ -239,7 +240,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
    */
   override def modelMetadata(): ModelMetaData = {
     new ModelMetaData("Intel DAAL Principal Components Model",
-      classOf[PrincipalComponentsModel].getName,
+      classOf[PcaModel].getName,
       classOf[DaalTkModelAdapter].getName,
       Map())
   }

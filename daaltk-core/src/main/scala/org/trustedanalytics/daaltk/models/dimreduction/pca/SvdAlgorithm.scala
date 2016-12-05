@@ -1,4 +1,4 @@
-package org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components
+package org.trustedanalytics.daaltk.models.dimreduction.pca
 
 import java.util.Arrays
 import com.intel.daal.algorithms.svd._
