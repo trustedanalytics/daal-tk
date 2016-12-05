@@ -8,11 +8,11 @@ from sparktk import TkContext
 from daaltk import Daal
 from sparktk.arguments import require_type
 
-__all__ = ['train','load','PrincipalComponentsModel']
+__all__ = ['train','load', 'PcaModel']
 
 def train(frame, columns, mean_centered=True, k=None):
     """
-    Creates a DAAL PrincipalComponentsModel by training on the given frame
+    Creates a DAAL PcaModel by training on the given frame
 
     Parameters
     ----------
@@ -21,7 +21,7 @@ def train(frame, columns, mean_centered=True, k=None):
     :param columns: (List[str]) List of column(s) containing the observations.
     :param mean_centered: (Optional(bool)) Option to mean center the columns.
     :param k: (Optional(int)) Principal component count.  Default is the number of observation columns.
-    :return: (PrincipalComponentsModel) Trained PrincipalComponentsModel model
+    :return: (PcaModel) Trained PcaModel model
     """
     if not isinstance(frame, Frame):
         raise TypeError("frame parameter must be a sparktk frame, but received: %s" % type(frame))
@@ -38,26 +38,26 @@ def train(frame, columns, mean_centered=True, k=None):
         raise ValueError("mean_centered must be a bool, received %s" % type(mean_centered))
     scala_k = tc.jutils.convert.to_scala_option(k)
     scala_model = _scala_obj.train(frame._scala, scala_columns, mean_centered, scala_k)
-    return PrincipalComponentsModel(tc, scala_model)
+    return PcaModel(tc, scala_model)
 
 def _get_scala_obj(tc):
     """Gets reference to the scala object"""
-    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PrincipalComponentsModel
+    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PcaModel
 
 def load(path, tc=TkContext.implicit):
     """
-    Load a DAAL PrincipalComponentsModel object from the given path.  An error is raised if the object provided is not a
-    DAAL PrincipalComponentsModel.
+    Load a DAAL PcaModel object from the given path.  An error is raised if the object provided is not a
+    DAAL PcaModel.
 
     :param path: (str) Path to load
     :param tc: (TkContext) spark-tk context
-    :return: (PrincipalComponentsModel) DAAL PrincipalComponentsModel loaded from the specified path
+    :return: (PcaModel) DAAL PcaModel loaded from the specified path
     """
     if isinstance(tc, Daal):
         tc = tc._tc
-    return tc.load(path, PrincipalComponentsModel)
+    return tc.load(path, PcaModel)
 
-class PrincipalComponentsModel(PropertiesObject):
+class PcaModel(PropertiesObject):
     """
     Principal component analysis [1]_ is a statistical algorithm that converts possibly correlated features to
     linearly uncorrelated variables called principal components. The number of principal components is less than
@@ -188,7 +188,7 @@ class PrincipalComponentsModel(PropertiesObject):
 
     @staticmethod
     def _from_scala(tc, scala_model):
-        return PrincipalComponentsModel(tc, scala_model)
+        return PcaModel(tc, scala_model)
 
     @property
     def columns(self):
@@ -234,7 +234,7 @@ class PrincipalComponentsModel(PropertiesObject):
 
     def predict(self, frame, mean_centered=True, t_squared_index=False, observation_columns=None, c=None):
         """
-        Predicting on a frame's columns using an Intel DAAL PrincipalComponentsModel.
+        Predicting on a frame's columns using an Intel DAAL PcaModel.
 
         Parameters
         ----------
