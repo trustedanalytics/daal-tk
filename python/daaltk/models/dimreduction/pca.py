@@ -42,7 +42,7 @@ def train(frame, columns, mean_centered=True, k=None):
 
 def _get_scala_obj(tc):
     """Gets reference to the scala object"""
-    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PcaModel
+    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimreduction.pca.PcaModel
 
 def load(path, tc=TkContext.implicit):
     """
@@ -110,7 +110,7 @@ class PcaModel(PropertiesObject):
 
     Perform training, which returns a model:
 
-        >>> model = tc.daaltk.models.dimensionality_reduction.principal_components.train(frame,['1','2','3','4','5','6'], mean_centered=True, k=3)
+        >>> model = tc.daaltk.models.dimreduction.pca.train(frame,['1','2','3','4','5','6'], mean_centered=True, k=3)
         -etc-
 
     Properties such as column_means, columns, and singlar_values can be accessed through the model object:
@@ -122,7 +122,7 @@ class PcaModel(PropertiesObject):
         k               = 3
         mean_centered   = True
         singular_values = [1.8056090475708324, 0.9698886054181584, 0.919656109986899]
-        vfactor         = [[0.9895680076816261, 0.046382751353135805, -0.12475255750327569], [0.07897478506481442, -0.4943009041467917, 0.3176350198124238], [-0.03674645332401975, 0.7300190812545759, 0.0796350142543979], [-0.1121071574201765, -0.26091516308565543, -0.8523686966878925], [0.023546733633406085, -0.33883576500462137, 0.14001735739339258], [0.006736189980619886, -0.19416745238716243, 0.36203011287047626]]
+        right_singular_vectors         = [[0.9895680076816261, 0.046382751353135805, -0.12475255750327569], [0.07897478506481442, -0.4943009041467917, 0.3176350198124238], [-0.03674645332401975, 0.7300190812545759, 0.0796350142543979], [-0.1121071574201765, -0.26091516308565543, -0.8523686966878925], [0.023546733633406085, -0.33883576500462137, 0.14001735739339258], [0.006736189980619886, -0.19416745238716243, 0.36203011287047626]]
         </skip>
 
     Predict using the same sample dataset that we used for training:
@@ -226,11 +226,11 @@ class PcaModel(PropertiesObject):
         return list(self._scala.singularValues())
 
     @property
-    def vfactor(self):
+    def right_singular_vectors(self):
         """
         Right singular vectors of the specified columns in the input frame
         """
-        return [list(i) for i in list(self._scala.vFactor())]
+        return [list(i) for i in list(self._scala.right_singular_vectors())]
 
     def predict(self, frame, mean_centered=True, t_squared_index=False, observation_columns=None, c=None):
         """
