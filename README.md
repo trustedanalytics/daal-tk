@@ -4,13 +4,19 @@
 It is used along with [spark-tk](https://github.com/trustedanalytics/spark-tk) frames, 
 which provide an API for creating and manipulating frames of data.
 
+daal-tk supports the following Intel DAAL models from release 2016.2.181:
+* Naive Bayes (classification)
+* KMeans (clustering)
+* PCA (dimensionality reduction)
+* Linear Regression (regression)
+
 ### Prerequisites
 
 * Maven
 * Python 2.7
 * Intel DAAL
 * spark-tk
-* [Python dependencies installed](https://github.com/intel-data/daal-tk/blob/master/python/requirements.txt)
+* [Python dependencies installed](https://github.com/trustedanalytics/daal-tk/blob/master/python/requirements.txt)
 
 ### Setting up your build environment and pom.xml files
 
