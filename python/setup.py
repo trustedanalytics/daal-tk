@@ -1,19 +1,18 @@
+# vim: set encoding=utf-8
+
+#  Copyright (c) 2016 Intel Corporation 
 #
-# /*
-# // Copyright (c) 2016 Intel Corporation 
-# //
-# // Licensed under the Apache License, Version 2.0 (the "License");
-# // you may not use this file except in compliance with the License.
-# // You may obtain a copy of the License at
-# //
-# //      http://www.apache.org/licenses/LICENSE-2.0
-# //
-# // Unless required by applicable law or agreed to in writing, software
-# // distributed under the License is distributed on an "AS IS" BASIS,
-# // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# // See the License for the specific language governing permissions and
-# // limitations under the License.
-# */
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 #
 
 from setuptools import setup
@@ -25,10 +24,9 @@ import time
 install_reqs = parse_requirements("requirements.txt", session=False)
 reqs = [str(ir.req) for ir in install_reqs]
 
-POST=os.getenv("DAALTK_POSTTAG","dev")
-BUILD=os.getenv("DAALTK_BUILDNUMBER", "0")
-
-VERSION=os.getenv("DAALTK_VERSION","0.7")
+POST="DEV"
+BUILD="0"
+VERSION="0.7"
 
 setup(
     # Application name:

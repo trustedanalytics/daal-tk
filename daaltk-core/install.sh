@@ -1,5 +1,4 @@
-# vim: set encoding=utf-8
-
+#
 #  Copyright (c) 2016 Intel Corporation 
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +14,3 @@
 #  limitations under the License.
 #
 
-# import operations
-from daaltk.operations.ops.covariance_matrix import covariance_matrix

@@ -1,5 +1,5 @@
-# vim: set encoding=utf-8
-
+#!/bin/bash
+#
 #  Copyright (c) 2016 Intel Corporation 
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +15,7 @@
 #  limitations under the License.
 #
 
-# import operations
-from daaltk.operations.ops.covariance_matrix import covariance_matrix
+
+sed -i  "s|DAAL_VERSION.*=.*|DAAL_VERSION = \"$DAAL_VERSION\"|g" main.go
+sed -i  "s|DAALTK_VERSION.*=.*|DAALTK_VERSION = \"$DAALTK_VERSION\"|g" main.go
+sed -i  "s|SPARKTK_VERSION.*=.*|SPARKTK_VERSION = \"$SPARKTK_VERSION\"|g" main.go

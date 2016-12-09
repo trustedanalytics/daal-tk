@@ -1,5 +1,5 @@
-# vim: set encoding=utf-8
-
+#!/bin/bash
+#
 #  Copyright (c) 2016 Intel Corporation 
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +15,9 @@
 #  limitations under the License.
 #
 
-# import operations
-from daaltk.operations.ops.covariance_matrix import covariance_matrix
+
+curl https://raw.githubusercontent.com/trustedanalytics/daal-utils/0.1.0-daal-2016.2.181/install.sh | bash /dev/stdin
+ls -la /home/agent/daal/
+
+
+

@@ -1,5 +1,5 @@
-# vim: set encoding=utf-8
-
+#!/bin/bash
+#
 #  Copyright (c) 2016 Intel Corporation 
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,5 +15,12 @@
 #  limitations under the License.
 #
 
-# import operations
-from daaltk.operations.ops.covariance_matrix import covariance_matrix
+
+pip install $sparktk_PYTHON
+
+unzip  $sparktk_JAVA
+
+sparkcorepackage=$(find $BASE_DIR -name "sparktk-core*.zip")
+corepackage=$(echo $sparkcorepackage | sed -e "s|.zip||g")
+
+mv $corepackage sparktk-core

@@ -1,0 +1,14 @@
+{
+	"daaltk-java": {
+		"label": "Daal-tk java package"
+	},
+	"daaltk-pip": {
+		"label": "Daal-tk pip package"
+	},
+	"licenses": {
+		"label": "Third party licenses and sources."
+	},
+	"daaltk-installer": {
+	    "label": "Daal-tk installer"
+	}
+}
