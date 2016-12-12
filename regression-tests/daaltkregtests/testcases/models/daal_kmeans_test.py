@@ -17,7 +17,6 @@
 
 """ test cases for the Daal kmeans clustering algorithm """
 import unittest
-#from sparktk import TkContext
 import daaltk
 from daaltkregtests.lib import daaltk_test
 
