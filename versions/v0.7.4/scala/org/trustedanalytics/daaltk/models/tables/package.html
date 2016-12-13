@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>tables - daaltk-core master-SNAPSHOT API - org.trustedanalytics.daaltk.models.tables</title>
+          <meta name="description" content="tables - daaltk - core master - SNAPSHOT API - org.trustedanalytics.daaltk.models.tables" />
+          <meta name="keywords" content="tables daaltk core master SNAPSHOT API org.trustedanalytics.daaltk.models.tables" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'org.trustedanalytics.daaltk.models.tables.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="org">org</a>.<a href="../../../package.html" class="extype" name="org.trustedanalytics">trustedanalytics</a>.<a href="../../package.html" class="extype" name="org.trustedanalytics.daaltk">daaltk</a>.<a href="../package.html" class="extype" name="org.trustedanalytics.daaltk.models">models</a></p>
+        <h1>tables</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">tables</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="org.trustedanalytics.daaltk.models.tables.DaalNumericTableFunctions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DaalNumericTableFunctionsextendsSerializable"></a>
+      <a id="DaalNumericTableFunctions:DaalNumericTableFunctions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DaalNumericTableFunctions.html"><span class="name">DaalNumericTableFunctions</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="org.trustedanalytics.daaltk.models.tables.DistributedLabeledTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DistributedLabeledTableextendsDistributedTable[org.trustedanalytics.daaltk.models.tables.IndexedLabeledTable]withProductwithSerializable"></a>
+      <a id="DistributedLabeledTable:DistributedLabeledTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="DistributedLabeledTable.html"><span class="name">DistributedLabeledTable</span></a><span class="params">(<span name="tableRdd">tableRdd: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<a href="IndexedLabeledTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedLabeledTable">IndexedLabeledTable</a>]</span>, <span name="numRows">numRows: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="DistributedTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.DistributedTable">DistributedTable</a>[<a href="IndexedLabeledTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedLabeledTable">IndexedLabeledTable</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Distributed DAAL numeric table with features and labels
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.DistributedNumericTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DistributedNumericTableextendsDistributedTable[org.trustedanalytics.daaltk.models.tables.IndexedNumericTable]withProductwithSerializable"></a>
+      <a id="DistributedNumericTable:DistributedNumericTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="DistributedNumericTable.html"><span class="name">DistributedNumericTable</span></a><span class="params">(<span name="tableRdd">tableRdd: <span class="extype" name="org.apache.spark.rdd.RDD">RDD</span>[<a href="IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a>]</span>, <span name="numRows">numRows: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="DistributedTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.DistributedTable">DistributedTable</a>[<a href="IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Distributed DAAL indexed numeric table
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.DistributedTable" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="DistributedTable[T]extendsSerializable"></a>
+      <a id="DistributedTable[T]:DistributedTable[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DistributedTable.html"><span class="name">DistributedTable</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Abstract class for RDD of DAAL numeric tables
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.IndexedLabeledTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IndexedLabeledTableextendsProductwithSerializable"></a>
+      <a id="IndexedLabeledTable:IndexedLabeledTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="IndexedLabeledTable.html"><span class="name">IndexedLabeledTable</span></a><span class="params">(<span name="features">features: <a href="IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a></span>, <span name="labels">labels: <a href="IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Indexed numeric tables with features and corresponding labels
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IndexedNumericTableextendsSerializablewithProduct"></a>
+      <a id="IndexedNumericTable:IndexedNumericTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="IndexedNumericTable.html"><span class="name">IndexedNumericTable</span></a><span class="params">(<span name="index">index: <span class="extype" name="scala.Long">Long</span></span>, <span name="table">table: <span class="extype" name="com.intel.daal.data_management.data.NumericTable">NumericTable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span> with <span class="extype" name="scala.Product">Product</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">DAAL numeric table with index</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="org.trustedanalytics.daaltk.models.tables.DaalConversionImplicits" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DaalConversionImplicits"></a>
+      <a id="DaalConversionImplicits:DaalConversionImplicits"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DaalConversionImplicits$.html"><span class="name">DaalConversionImplicits</span></a>
+      </span>
+      </h4>
+      <p class="comment cmt">These implicits can be imported to add conversion functions related functions to DAAL tables
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.DistributedLabeledTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DistributedLabeledTable"></a>
+      <a id="DistributedLabeledTable:DistributedLabeledTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DistributedLabeledTable$.html"><span class="name">DistributedLabeledTable</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Factory object for creating labeled tables
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.tables.DistributedNumericTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DistributedNumericTable"></a>
+      <a id="DistributedNumericTable:DistributedNumericTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DistributedNumericTable$.html"><span class="name">DistributedNumericTable</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IndexedNumericTable"></a>
+      <a id="IndexedNumericTable:IndexedNumericTable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="IndexedNumericTable$.html"><span class="name">IndexedNumericTable</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../lib/template.js"></script>
+    </body>
+      </html>

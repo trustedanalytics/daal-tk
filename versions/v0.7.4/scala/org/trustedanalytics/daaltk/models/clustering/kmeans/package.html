@@ -1,0 +1,218 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>kmeans - daaltk-core master-SNAPSHOT API - org.trustedanalytics.daaltk.models.clustering.kmeans</title>
+          <meta name="description" content="kmeans - daaltk - core master - SNAPSHOT API - org.trustedanalytics.daaltk.models.clustering.kmeans" />
+          <meta name="keywords" content="kmeans daaltk core master SNAPSHOT API org.trustedanalytics.daaltk.models.clustering.kmeans" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../index.html';
+            var hash = 'org.trustedanalytics.daaltk.models.clustering.kmeans.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../package.html" class="extype" name="org">org</a>.<a href="../../../../package.html" class="extype" name="org.trustedanalytics">trustedanalytics</a>.<a href="../../../package.html" class="extype" name="org.trustedanalytics.daaltk">daaltk</a>.<a href="../../package.html" class="extype" name="org.trustedanalytics.daaltk.models">models</a>.<a href="../package.html" class="extype" name="org.trustedanalytics.daaltk.models.clustering">clustering</a></p>
+        <h1>kmeans</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">kmeans</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.CentroidsInitArgs" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CentroidsInitArgsextendsProductwithSerializable"></a>
+      <a id="CentroidsInitArgs:CentroidsInitArgs"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CentroidsInitArgs.html"><span class="name">CentroidsInitArgs</span></a><span class="params">(<span name="k">k: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">2</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Centroid initializer args class
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.CentroidsInitializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CentroidsInitializerextendsDistributedAlgorithm[com.intel.daal.algorithms.kmeans.init.InitPartialResult,com.intel.daal.algorithms.kmeans.init.InitResult]withProductwithSerializable"></a>
+      <a id="CentroidsInitializer:CentroidsInitializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CentroidsInitializer.html"><span class="name">CentroidsInitializer</span></a><span class="params">(<span name="featureTable">featureTable: <a href="../../tables/DistributedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.DistributedNumericTable">DistributedNumericTable</a></span>, <span name="args">args: <a href="CentroidsInitArgs.html" class="extype" name="org.trustedanalytics.daaltk.models.clustering.kmeans.CentroidsInitArgs">CentroidsInitArgs</a></span>)</span><span class="result"> extends <a href="../../../DistributedAlgorithm.html" class="extype" name="org.trustedanalytics.daaltk.DistributedAlgorithm">DistributedAlgorithm</a>[<span class="extype" name="com.intel.daal.algorithms.kmeans.init.InitPartialResult">InitPartialResult</span>, <span class="extype" name="com.intel.daal.algorithms.kmeans.init.InitResult">InitResult</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Initializer of cluster centroids in DAAL KMeans
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.CentroidsUpdater" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CentroidsUpdaterextendsDistributedAlgorithm[com.intel.daal.algorithms.kmeans.PartialResult,com.intel.daal.algorithms.kmeans.Result]withProductwithSerializable"></a>
+      <a id="CentroidsUpdater:CentroidsUpdater"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CentroidsUpdater.html"><span class="name">CentroidsUpdater</span></a><span class="params">(<span name="featureTable">featureTable: <a href="../../tables/DistributedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.DistributedNumericTable">DistributedNumericTable</a></span>, <span name="centroids">centroids: <a href="../../tables/IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a></span>, <span name="labelColumn">labelColumn: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="../../../DistributedAlgorithm.html" class="extype" name="org.trustedanalytics.daaltk.DistributedAlgorithm">DistributedAlgorithm</a>[<span class="extype" name="com.intel.daal.algorithms.kmeans.PartialResult">PartialResult</span>, <span class="extype" name="com.intel.daal.algorithms.kmeans.Result">Result</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Run one iteration of k-means clustering algorithm to update cluster centroids
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.ClusterAssigner" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClusterAssignerextendsProductwithSerializable"></a>
+      <a id="ClusterAssigner:ClusterAssigner"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ClusterAssigner.html"><span class="name">ClusterAssigner</span></a><span class="params">(<span name="featureTable">featureTable: <a href="../../tables/DistributedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.DistributedNumericTable">DistributedNumericTable</a></span>, <span name="centroids">centroids: <a href="../../tables/IndexedNumericTable.html" class="extype" name="org.trustedanalytics.daaltk.models.tables.IndexedNumericTable">IndexedNumericTable</a></span>, <span name="labelColumn">labelColumn: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Assign cluster index to each observation in feature table
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansModel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMeansModelextendsSerializablewithModelwithDaalModelwithProduct"></a>
+      <a id="KMeansModel:KMeansModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KMeansModel.html"><span class="name">KMeansModel</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span> with <span class="extype" name="org.trustedanalytics.scoring.interfaces.Model">Model</span> with <a href="../../DaalModel.html" class="extype" name="org.trustedanalytics.daaltk.models.DaalModel">DaalModel</a> with <span class="extype" name="scala.Product">Product</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Trained DAAL KMeansModel
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansModelTkMetaData" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMeansModelTkMetaDataextendsSerializablewithProduct"></a>
+      <a id="KMeansModelTkMetaData:KMeansModelTkMetaData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KMeansModelTkMetaData.html"><span class="name">KMeansModelTkMetaData</span></a><span class="params">(<span name="trainingObservationColumns">trainingObservationColumns: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="trainingLabelColumn">trainingLabelColumn: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="k">k: <span class="extype" name="scala.Int">Int</span></span>, <span name="centroids">centroids: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Double">Double</span>]]</span>, <span name="clusters">clusters: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clusterSize">clusterSize: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Long">Long</span>]</span>, <span name="columnScalings">columnScalings: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Double">Double</span>]]</span>)</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span> with <span class="extype" name="scala.Product">Product</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">TK Metadata that will be stored as part of the model
+</p>
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansTrainReturn" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMeansTrainReturnextendsProductwithSerializable"></a>
+      <a id="KMeansTrainReturn:KMeansTrainReturn"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KMeansTrainReturn.html"><span class="name">KMeansTrainReturn</span></a><span class="params">(<span name="centroids">centroids: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Double">Double</span>]]</span>, <span name="clusterSize">clusterSize: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Long">Long</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Return object when training a DAAL KMeansModel</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansFunctions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMeansFunctions"></a>
+      <a id="KMeansFunctions:KMeansFunctions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KMeansFunctions$.html"><span class="name">KMeansFunctions</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansModel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMeansModel"></a>
+      <a id="KMeansModel:KMeansModel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KMeansModel$.html"><span class="name">KMeansModel</span></a><span class="result"> extends <span class="extype" name="org.trustedanalytics.sparktk.saveload.TkSaveableObject">TkSaveableObject</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../../lib/template.js"></script>
+    </body>
+      </html>
