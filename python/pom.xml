@@ -21,6 +21,11 @@
     <profiles>
         <profile>
             <id>python-docs</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
