@@ -21,6 +21,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
+import org.apache.spark.sql.Row.merge
 import org.json4s.JsonAST.JValue
 import org.trustedanalytics.daaltk.models.{ DaalModel, DaalTkModelAdapter }
 import org.trustedanalytics.sparktk.TkContext
@@ -173,21 +174,23 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       require(svdData.observationColumns.length == observationColumns.get.length, "Number of columns for train and predict should be same")
     if (c.isDefined)
       require(svdData.k >= c.get, "Number of components must be at most the number of components trained on")
-
-    // Validate arguments
+    if (meanCentered)
+      require(this.meanCentered, "Cannot mean center the predict frame if the train frame was not mean centered.")
     val predictC = c.getOrElse(svdData.k)
     val predictColumns = observationColumns.getOrElse(svdData.observationColumns)
-    val frameRdd = new FrameRdd(frame.schema, frame.rdd)
-    val columnStatistics = frameRdd.columnStatistics(predictColumns)
+    val frameRdd = new FrameRdd(frame.schema, frame.rdd).zipWithIndex().map { case (row, index) => (index, row) }
+    require(predictColumns.length == svdData.observationColumns.length, "Number of columns for train and predict should be same")
+    require(predictC <= this.k, s"Number of components ($predictC) must be at most the number of components trained on ($this.k)")
+    predictColumns.map(columnName => frame.schema.requireColumnIsNumerical(columnName))
 
     //TODO: Update predict method once DAAL supports linear algebra operations on its numeric tables
     // Predict principal components and optional T-squared index
     val indexedRowMatrix = PrincipalComponentsFunctions.toIndexedRowMatrix(
-      frameRdd.zipWithIndex().map { case (row, index) => (index, row) },
+      frameRdd,
       frame.schema,
       predictColumns,
       meanCentered,
-      columnStatistics.mean.toArray)
+      columnMeans)
     val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.vFactor, predictC, indexedRowMatrix)
 
     val pcaColumns = for (i <- 1 to predictC) yield Column("p_" + i.toString, DataTypes.float64)
@@ -200,11 +203,11 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       case false => (pcaColumns, principalComponents)
     }
 
-    val componentRows = components.rows.map(row => Row.fromSeq(row.vector.toArray.toSeq))
-    val componentFrame = new FrameRdd(FrameSchema(componentColumns.toList), componentRows)
-    val resultFrame = frameRdd.zipFrameRdd(componentFrame)
+    val componentRows = components.rows.map(row => (row.index, Row.fromSeq(row.vector.toArray.toSeq)))
 
-    new Frame(resultFrame.rdd, resultFrame.schema)
+    val joinedFrame = frameRdd.join(componentRows).map({ case (index, (rowA, rowB)) => (merge(rowA, rowB)) })
+    val componentFrame = new FrameRdd(FrameSchema(frame.schema.columns ++ componentColumns), joinedFrame)
+    new Frame(componentFrame, componentFrame.schema)
   }
 
   /**
