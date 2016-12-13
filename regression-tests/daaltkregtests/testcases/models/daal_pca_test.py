@@ -215,7 +215,6 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
                                 "X6", "X7", "X8", "X9", "X10"],
                                k=10)
 
-    @unittest.skip("daaltk: pca model should throw useful error when columns are bad type")
     def test_daal_pca_bad_column_type(self):
         """Test bad feature column name type"""
         with self.assertRaisesRegexp(Exception, "columns must be a list of strings"):
