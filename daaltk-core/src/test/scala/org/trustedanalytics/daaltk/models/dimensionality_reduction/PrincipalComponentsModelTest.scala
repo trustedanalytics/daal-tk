@@ -69,7 +69,7 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
       assert(thrown.getMessage.contains("column bogus was not found"))
 
       // invalid k (greater than number of observation columns
-      thrown = the[Exception] thrownBy PrincipalComponentsModel.train(frame, List("1", "bogus", "3", "4", "5", "6"), true, Some(8))
+      thrown = the[Exception] thrownBy PrincipalComponentsModel.train(frame, List("1", "2", "3", "4", "5", "6"), true, Some(8))
       assert(thrown.getMessage.contains("k must be less than or equal to number of observation columns"))
     }
 
@@ -84,7 +84,7 @@ class PrincipalComponentsModelTest extends TestingSparkContextWordSpec with Matc
 
       // invalid observation column
       thrown = the[Exception] thrownBy model.predict(frame, true, true, Some(List("1", "bogus", "3", "4", "5", "6")), Some(2))
-      assert(thrown.getMessage.contains("Invalid column name bogus provided"))
+      assert(thrown.getMessage.contains("No column named bogus"))
 
       // invalid c (greater than number of observation columns)
       thrown = the[Exception] thrownBy model.predict(frame, true, true, Some(List("1", "2", "3", "4", "5", "6")), Some(8))
