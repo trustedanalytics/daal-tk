@@ -19,7 +19,11 @@
 WD=target/
 
 
-MODULE="daaltk-core-$VERSION.$POST_TAG$BUILD_NUMBER"
+if [ "$POST_TAG" == "rc" ] || [ "$POST_TAG" == "post" ]; then
+    MODULE="daaltk-core-$VERSION$POST_TAG$BUILD_NUMBER"
+else
+    MODULE="daaltk-core-$VERSION.$POST_TAG$BUILD_NUMBER"
+fi
 
 pushd $WD
 
