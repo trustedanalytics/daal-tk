@@ -84,7 +84,7 @@ class PcaModelTest extends TestingSparkContextWordSpec with Matchers {
 
       // invalid observation column
       thrown = the[Exception] thrownBy model.predict(frame, true, true, Some(List("1", "bogus", "3", "4", "5", "6")), Some(2))
-      assert(thrown.getMessage.contains("Invalid column name bogus provided"))
+      assert(thrown.getMessage.contains("No column named bogus"))
 
       // invalid c (greater than number of observation columns)
       thrown = the[Exception] thrownBy model.predict(frame, true, true, Some(List("1", "2", "3", "4", "5", "6")), Some(8))
