@@ -246,7 +246,7 @@ class PcaModel(PropertiesObject):
         """
         Right singular vectors of the specified columns in the input frame
         """
-        return [list(i) for i in list(self._scala.right_singular_vectors())]
+        return [list(i) for i in list(self._scala.rightSingularVectors())]
 
     def predict(self, frame, mean_centered=True, t_squared_index=False, observation_columns=None, c=None):
         """

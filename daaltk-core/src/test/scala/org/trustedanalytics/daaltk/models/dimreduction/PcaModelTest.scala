@@ -37,7 +37,7 @@ class PcaModelTest extends TestingSparkContextWordSpec with Matchers {
     Column("5", DataTypes.float32),
     Column("6", DataTypes.float32)))
 
-  "PrincipalComponentsModel" should {
+  "PcaModel" should {
 
     "create a DAAL PrincipalComponentsModel train and predict" in {
       val rdd = sparkContext.parallelize(frameData)
