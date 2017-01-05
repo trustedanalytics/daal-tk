@@ -78,7 +78,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     @unittest.skip("daaltk: pca_model has no singular vectors")
     def test_daal_principal_components_train_mean(self):
         """Test the train functionality with mean centering"""
-        pca_train_out = self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+        pca_train_out = self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                        ["X1", "X2", "X3", "X4", "X5",
                                         "X6", "X7", "X8", "X9", "X10"],
                                        True, 10)
@@ -93,7 +93,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
             self.frame.add_columns(
                 lambda x: x[c] - mean, (c+"_n", float))
 
-        pcamodelmean = self.context.daaltk.models.dimensionality_reduction.principal_components.train(
+        pcamodelmean = self.context.daaltk.models.dimreduction.pca.train(
             self.frame,
             ["X1_n", "X2_n", "X3_n", "X4_n", "X5_n",
              "X6_n", "X7_n", "X8_n", "X9_n", "X10_n"],
@@ -117,7 +117,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     @unittest.skip("daaltk: pca_model has no singular vectors")
     def test_daal_pca_predict(self):
         """Test the train functionality"""
-        pca_train_out = self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+        pca_train_out = self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                        ["X1", "X2", "X3", "X4", "X5",
                                         "X6", "X7", "X8", "X9", "X10"],
                                        False, 10)
@@ -137,7 +137,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     @unittest.skip("daaltk: pca_model has no singular vectors")
     def test_daal_pca_train(self):
         """Test the train functionality"""
-        pca_train_out = self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+        pca_train_out = self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                        ["X1", "X2", "X3", "X4", "X5",
                                         "X6", "X7", "X8", "X9", "X10"],
                                        False, 10)
@@ -160,7 +160,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
 
     def test_daal_pca_publish(self):
         """Test the publish functionality"""
-        pcamodel = self.context.daaltk.models.dimensionality_reduction.principal_components.train(
+        pcamodel = self.context.daaltk.models.dimreduction.pca.train(
             self.frame,
             ["X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"],
             False, 10)
@@ -171,7 +171,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     @unittest.skip("daaltk: pca_model has no singular vectors")
     def test_daal_pca_default(self):
         """Test default no. of k"""
-        pca_train_out = self.context.daaltk.models.dimensionality_reduction.principal_components.train(
+        pca_train_out = self.context.daaltk.models.dimreduction.pca.train(
             self.frame,
             ["X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10"],
             False)
@@ -194,7 +194,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     def test_daal_pca_bad_no_of_k(self):
         """Test invalid k value in train"""
         with self.assertRaisesRegexp(Exception, "k must be less than or equal to number of observation columns"):
-                self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+                self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                ["X1", "X2", "X3", "X4", "X5",
                                 "X6", "X7", "X8", "X9", "X10"],
                                k=11)
@@ -202,7 +202,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     def test_daal_pca_invalid_k(self):
         """Test k < 1 in train"""
         with self.assertRaisesRegexp(Exception, "k must be smaller than the number of observation columns"):
-                self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+                self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                ["X1", "X2", "X3", "X4", "X5",
                                 "X6", "X7", "X8", "X9", "X10"],
                                k=0)
@@ -210,7 +210,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     def test_daal_pca_bad_column_name(self):
         """Test bad feature column name"""
         with self.assertRaisesRegexp(Exception, "column ERR was not found"):
-                self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame,
+                self.context.daaltk.models.dimreduction.pca.train(self.frame,
                                ["ERR", "X2", "X3", "X4", "X5",
                                 "X6", "X7", "X8", "X9", "X10"],
                                k=10)
@@ -218,7 +218,7 @@ class DaalPrincipalComponent(daaltk_test.DaalTKTestCase):
     def test_daal_pca_bad_column_type(self):
         """Test bad feature column name type"""
         with self.assertRaisesRegexp(Exception, "columns must be a list of strings"):
-                self.context.daaltk.models.dimensionality_reduction.principal_components.train(self.frame, 10, k=10)
+                self.context.daaltk.models.dimreduction.pca.train(self.frame, 10, k=10)
 
 
 if __name__ == '__main__':
