@@ -25,11 +25,11 @@ from sparktk import TkContext
 from daaltk import Daal
 from sparktk.arguments import require_type
 
-__all__ = ['train','load','PrincipalComponentsModel']
+__all__ = ['train','load', 'PcaModel']
 
 def train(frame, columns, mean_centered=True, k=None):
     """
-    Creates a DAAL PrincipalComponentsModel by training on the given frame
+    Creates a DAAL PcaModel by training on the given frame
 
     Parameters
     ----------
@@ -38,7 +38,7 @@ def train(frame, columns, mean_centered=True, k=None):
     :param columns: (List[str]) List of column(s) containing the observations.
     :param mean_centered: (Optional(bool)) Option to mean center the columns.
     :param k: (Optional(int)) Principal component count.  Default is the number of observation columns.
-    :return: (PrincipalComponentsModel) Trained PrincipalComponentsModel model
+    :return: (PcaModel) Trained PcaModel model
     """
     if not isinstance(frame, Frame):
         raise TypeError("frame parameter must be a sparktk frame, but received: %s" % type(frame))
@@ -55,26 +55,26 @@ def train(frame, columns, mean_centered=True, k=None):
         raise ValueError("mean_centered must be a bool, received %s" % type(mean_centered))
     scala_k = tc.jutils.convert.to_scala_option(k)
     scala_model = _scala_obj.train(frame._scala, scala_columns, mean_centered, scala_k)
-    return PrincipalComponentsModel(tc, scala_model)
+    return PcaModel(tc, scala_model)
 
 def _get_scala_obj(tc):
     """Gets reference to the scala object"""
-    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PrincipalComponentsModel
+    return tc.sc._jvm.org.trustedanalytics.daaltk.models.dimreduction.pca.PcaModel
 
 def load(path, tc=TkContext.implicit):
     """
-    Load a DAAL PrincipalComponentsModel object from the given path.  An error is raised if the object provided is not a
-    DAAL PrincipalComponentsModel.
+    Load a DAAL PcaModel object from the given path.  An error is raised if the object provided is not a
+    DAAL PcaModel.
 
     :param path: (str) Path to load
     :param tc: (TkContext) spark-tk context
-    :return: (PrincipalComponentsModel) DAAL PrincipalComponentsModel loaded from the specified path
+    :return: (PcaModel) DAAL PcaModel loaded from the specified path
     """
     if isinstance(tc, Daal):
         tc = tc._tc
-    return tc.load(path, PrincipalComponentsModel)
+    return tc.load(path, PcaModel)
 
-class PrincipalComponentsModel(PropertiesObject):
+class PcaModel(PropertiesObject):
     """
     Principal component analysis [1]_ is a statistical algorithm that converts possibly correlated features to
     linearly uncorrelated variables called principal components. The number of principal components is less than
@@ -127,7 +127,7 @@ class PrincipalComponentsModel(PropertiesObject):
 
     Perform training, which returns a model:
 
-        >>> model = tc.daaltk.models.dimensionality_reduction.principal_components.train(frame,['1','2','3','4','5','6'], mean_centered=True, k=3)
+        >>> model = tc.daaltk.models.dimreduction.pca.train(frame,['1','2','3','4','5','6'], mean_centered=True, k=3)
         -etc-
 
     Properties such as column_means, columns, and singlar_values can be accessed through the model object:
@@ -139,7 +139,7 @@ class PrincipalComponentsModel(PropertiesObject):
         k               = 3
         mean_centered   = True
         singular_values = [1.8056090475708324, 0.9698886054181584, 0.919656109986899]
-        vfactor         = [[0.9895680076816261, 0.046382751353135805, -0.12475255750327569], [0.07897478506481442, -0.4943009041467917, 0.3176350198124238], [-0.03674645332401975, 0.7300190812545759, 0.0796350142543979], [-0.1121071574201765, -0.26091516308565543, -0.8523686966878925], [0.023546733633406085, -0.33883576500462137, 0.14001735739339258], [0.006736189980619886, -0.19416745238716243, 0.36203011287047626]]
+        right_singular_vectors         = [[0.9895680076816261, 0.046382751353135805, -0.12475255750327569], [0.07897478506481442, -0.4943009041467917, 0.3176350198124238], [-0.03674645332401975, 0.7300190812545759, 0.0796350142543979], [-0.1121071574201765, -0.26091516308565543, -0.8523686966878925], [0.023546733633406085, -0.33883576500462137, 0.14001735739339258], [0.006736189980619886, -0.19416745238716243, 0.36203011287047626]]
         </skip>
 
     Predict using the same sample dataset that we used for training:
@@ -149,24 +149,23 @@ class PrincipalComponentsModel(PropertiesObject):
 
     Take a look at the predicted_frame:
 
-        <skip>
         >>> predicted_frame.inspect()
         [#]  1    2    3    4    5    6    p_1              p_2
         ===================================================================
-        [0]  2.6  1.7  0.3  1.5  0.8  0.7  -0.314466908336  -0.317607338018
-        [1]  3.3  1.8  0.4  0.7  0.9  0.8   0.475167548513  -0.106135785631
-        [2]  3.5  1.7  0.3  1.7  0.6  0.4   0.546992663373    -0.2020285057
-        [3]  3.7  1.0  0.5  1.2  0.6  0.3   0.737654584411   0.449136820506
-        [4]  1.5  1.2  0.5  1.4  0.6  0.4   -1.44534788796   0.176634808843
+        [0]  1.5  1.2  0.5  1.4  0.6  0.4    1.44502725724  -0.158927169085
+        [1]  2.6  1.7  0.3  1.5  0.8  0.7    0.31469207813   0.201966945997
+        [2]  3.5  1.7  0.3  1.7  0.6  0.4  -0.548983909832  -0.212579414955
+        [3]  3.3  1.8  0.4  0.7  0.9  0.8  -0.471408700711   0.655949517939
+        [4]  3.7  1.0  0.5  1.2  0.6  0.3   -0.73932672483  -0.486409879896
         <BLANKLINE>
         [#]  t_squared_index
         ====================
-        [0]    0.13756729239
-        [1]  0.0812293200034
-        [2]    0.13516232763
-        [3]    0.38134474314
-        [4]   0.673930077524
-        </skip>
+        [0]   0.673100927618
+        [1]  0.0822818182992
+        [2]   0.149992537736
+        [3]   0.615487491095
+        [4]   0.468719378822
+
 
     The trained model can be saved and restored:
 
@@ -205,7 +204,7 @@ class PrincipalComponentsModel(PropertiesObject):
 
     @staticmethod
     def _from_scala(tc, scala_model):
-        return PrincipalComponentsModel(tc, scala_model)
+        return PcaModel(tc, scala_model)
 
     @property
     def columns(self):
@@ -243,15 +242,15 @@ class PrincipalComponentsModel(PropertiesObject):
         return list(self._scala.singularValues())
 
     @property
-    def vfactor(self):
+    def right_singular_vectors(self):
         """
         Right singular vectors of the specified columns in the input frame
         """
-        return [list(i) for i in list(self._scala.vFactor())]
+        return [list(i) for i in list(self._scala.right_singular_vectors())]
 
     def predict(self, frame, mean_centered=True, t_squared_index=False, observation_columns=None, c=None):
         """
-        Predicting on a frame's columns using an Intel DAAL PrincipalComponentsModel.
+        Predicting on a frame's columns using an Intel DAAL PcaModel.
 
         Parameters
         ----------

@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+# vim: set encoding=utf-8
+
 #  Copyright (c) 2016 Intel Corporation 
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,39 +14,3 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-
-
-WD=target/
-
-
-if [ "$POST_TAG" == "rc" ] || [ "$POST_TAG" == "post" ]; then
-    MODULE="daaltk-core-$VERSION$POST_TAG$BUILD_NUMBER"
-else
-    MODULE="daaltk-core-$VERSION.$POST_TAG$BUILD_NUMBER"
-fi
-
-pushd $WD
-
-	mkdir -p $MODULE/dependencies
-
-	cp daaltk-core*.jar $MODULE/
-
-	for source in `find \`pwd\` -iname "*sources.jar"`
-	do
-	if [ "$source" != "" ]; then
-	echo remove source file $source
-	rm  $source
-	fi
-	done
-
-	cp -Rv dependencies/* $MODULE/dependencies/
-
-	pushd $MODULE
-	ln -s dependencies lib
-	popd
-
-	zip --symlinks -r $MODULE.zip $MODULE
-
-	rm -rf $MODULE
-
-popd
