@@ -66,6 +66,7 @@
     </repositories>
 
     <properties>
+        <sparktk-core.version>master-SNAPSHOT</sparktk-core.version>
         <artifactIdExcludesHive>hive-exec,hive-metastore</artifactIdExcludesHive>
         <artifactIdExcludesHadoop>hadoop-aws,hadoop-annotations,hadoop-mapreduce-client-common,hadoop-mapreduce-client-core,hadoop-mapreduce-client-jobclient,hadoop-mapreduce-client-shuffle,hadoop-yarn-api,hadoop-yarn-client,hadoop-yarn-common,hadoop-yarn-server-common,hadoop-yarn-server-web-proxy</artifactIdExcludesHadoop>
         <artifactIdExcludesSpark>spark-hive_${tap.scala.short.version},spark-yarn_${tap.scala.short.version},spark-core_${tap.scala.short.version},spark-mllib_${tap.scala.short.version},spark-sql_${tap.scala.short.version},spark-graphx_${tap.scala.short.version},spark-catalyst_${tap.scala.short.version},spark-launcher_${tap.scala.short.version},spark-network-common_${tap.scala.short.version},spark-network-shuffle_${tap.scala.short.version},spark-streaming_${tap.scala.short.version},spark-unsafe_${tap.scala.short.version}</artifactIdExcludesSpark>
@@ -75,34 +76,12 @@
         <!--org.apache.hadoop,org.apache.hbase,org.apache.hive-->
     </properties>
 
-
+    <modules>
+        <module>daaltk-core</module>
+        <module>python</module>
+    </modules>
 
     <profiles>
-        <profile>
-            <id>modules-all</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>!NEVERSETME</name>
-                </property>
-            </activation>
-            <modules>
-                <module>daaltk-core</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>python-unit-tests</id>
-            <activation>
-                <property>
-                    <name>!skipTests</name>
-                </property>
-            </activation>
-            <modules>
-                <module>python</module>
-            </modules>
-        </profile>
-
         <profile>
             <id>integration-tests</id>
             <activation>
@@ -132,7 +111,7 @@
                             <inherited>true</inherited>
                             <groupId>net.alchim31.maven</groupId>
                             <artifactId>scala-maven-plugin</artifactId>
-                            <version>3.1.6</version>
+                            <version>3.2.2</version>
                             <executions>
                                 <execution>
                                     <id>compile</id>
@@ -390,26 +369,52 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.3</version>
                     <configuration>
-                        <header>package/license-header.txt</header>
-                        <properties>
-                            <currentYear>2015</currentYear>
-                        </properties>
-                        <excludes>
+                        <header>license-header.txt</header>
+                        <headerDefinitions>
+                            <headerDefinition>python.xml</headerDefinition>
+                        </headerDefinitions>
+                        <mapping>
+                            <py>PYTHON_STYLE</py>
+                        </mapping>
+                        <excludes combine.children="append">
+                            <exclude>zinc-0.3.7/</exclude>
+                            <exclude>datasets/dicom_xml/</exclude>
+                            <exclude>regression-tests/datasets/</exclude>
+                            <exclude>python.xml</exclude>
+                            <exclude>integration-tests/tests/test_docs_generated.py</exclude>
+                            <exclude>integration-tests/tests/sandbox</exclude>
                             <exclude>findbugs-exclude.xml</exclude>
+                            <exclude>regression-tests/dist/</exclude>
                             <exclude>scalastyle-config.xml</exclude>
                             <exclude>checkstyle.xml</exclude>
+                            <exclude>**/*.html</exclude>
+                            <exclude>**/*.js</exclude>
+                            <exclude>**/*.css</exclude>
+                            <exclude>**/nosetests.xml</exclude>
                             <exclude>**/pom.xml</exclude>
                             <exclude>doc/**/*.*</exclude>
                             <exclude>conf/**/*.*</exclude>
                             <exclude>**/*.txt</exclude>
                             <exclude>**/*.csv</exclude>
+                            <exclude>**/*.tsv</exclude>
                             <exclude>**/*.rst</exclude>
                             <exclude>**/*.tpl</exclude>
                             <exclude>**/*.inc</exclude>
                             <exclude>**/*.conf</exclude>
+                            <exclude>**/*.dcm</exclude>
+                            <exclude>**/*.log</exclude>
+                            <exclude>**/*.mako</exclude>
+                            <exclude>**/LICENSE</exclude>
+                            <exclude>**/NOTICE</exclude>
+                            <exclude>**/Dockerfile</exclude>
+                            <exclude>**/.coverage</exclude>
+                            <exclude>**/MANIFEST.in</exclude>
+                            <exclude>**/PKG-INFO</exclude>
                             <exclude>**/*.sql</exclude>
+                            <exclude>**/*pytest-report</exclude>
+                            <exclude>**/dist/**/setup.cfg</exclude>
+
                         </excludes>
                     </configuration>
                     <executions>
@@ -438,7 +443,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>2.8.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -574,7 +579,7 @@
             <dependency>
                 <groupId>org.trustedanalytics</groupId>
                 <artifactId>sparktk-core</artifactId>
-                <version>master-SNAPSHOT</version>
+                <version>${sparktk-core.version}</version>
             </dependency>
             <!-- scoring dependencies -->
             <dependency>

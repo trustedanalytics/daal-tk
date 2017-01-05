@@ -19,10 +19,11 @@ package org.trustedanalytics.daaltk.models
 
 import java.net.URLClassLoader
 import java.util.zip.ZipInputStream
+
 import org.slf4j.LoggerFactory
 import org.trustedanalytics.daaltk.models.classification.naive_bayes.NaiveBayesModel
 import org.trustedanalytics.daaltk.models.clustering.kmeans.KMeansModel
-import org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components.PrincipalComponentsModel
+import org.trustedanalytics.daaltk.models.dimreduction.pca.PcaModel
 import org.trustedanalytics.daaltk.models.regression.linear_regression.LinearRegressionModel
 import org.trustedanalytics.scoring.interfaces.Model
 import org.trustedanalytics.sparktk.models.SparkTkModelAdapter
@@ -42,7 +43,7 @@ class DaalTkModelAdapter extends SparkTkModelAdapter {
   private lazy val daalLoaders: Map[String, LoaderType] = {
     val entries: Seq[TkSaveableObject] = List(KMeansModel,
       NaiveBayesModel,
-      PrincipalComponentsModel,
+      PcaModel,
       LinearRegressionModel)
     entries.map(e => e.formatId -> e.loadTkSaveableObject _).toMap
   }

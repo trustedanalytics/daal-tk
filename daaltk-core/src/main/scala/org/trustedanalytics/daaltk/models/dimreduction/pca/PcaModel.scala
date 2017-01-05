@@ -1,21 +1,19 @@
 /**
- * /*
- * // Copyright (c) 2016 Intel Corporation 
- * //
- * // Licensed under the Apache License, Version 2.0 (the "License");
- * // you may not use this file except in compliance with the License.
- * // You may obtain a copy of the License at
- * //
- * //      http://www.apache.org/licenses/LICENSE-2.0
- * //
- * // Unless required by applicable law or agreed to in writing, software
- * // distributed under the License is distributed on an "AS IS" BASIS,
- * // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * // See the License for the specific language governing permissions and
- * // limitations under the License.
- * */
+ *  Copyright (c) 2016 Intel Corporation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-package org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components
+package org.trustedanalytics.daaltk.models.dimreduction.pca
 
 import breeze.linalg.DenseVector
 import org.apache.commons.lang.StringUtils
@@ -23,6 +21,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Row
+import org.apache.spark.sql.Row.merge
 import org.json4s.JsonAST.JValue
 import org.trustedanalytics.daaltk.models.{ DaalModel, DaalTkModelAdapter }
 import org.trustedanalytics.sparktk.TkContext
@@ -35,7 +34,7 @@ import org.trustedanalytics.scoring.interfaces.{ ModelMetaData, Field, Model }
 import org.trustedanalytics.sparktk.models.ScoringModelUtils
 import org.apache.spark.mllib.linalg.{ DenseVector => MllibDenseVector, DenseMatrix => MllibDenseMatrix }
 
-object PrincipalComponentsModel extends TkSaveableObject {
+object PcaModel extends TkSaveableObject {
   /**
    * Current format version for model save/load
    */
@@ -62,7 +61,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
   def train(frame: Frame,
             observationColumns: Seq[String],
             meanCentered: Boolean = true,
-            k: Option[Int] = None): PrincipalComponentsModel = {
+            k: Option[Int] = None): PcaModel = {
     require(frame != null, "frame is required")
     require(observationColumns != null && observationColumns.length > 0, "observations columns must not be null nor empty.")
     require(observationColumns.forall(StringUtils.isNotEmpty(_)), "observation columns names cannot be null or empty")
@@ -73,7 +72,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
     val frameRdd = new FrameRdd(frame.schema, frame.rdd)
     val trainK = k.getOrElse(observationColumns.length)
 
-    PrincipalComponentsModel(SvdAlgorithm(frameRdd, observationColumns, meanCentered).compute(trainK, computeU = false))
+    PcaModel(SvdAlgorithm(frameRdd, observationColumns, meanCentered).compute(trainK, computeU = false))
   }
 
   /**
@@ -89,21 +88,22 @@ object PrincipalComponentsModel extends TkSaveableObject {
       m.meanCentered,
       new MllibDenseVector(m.meanVector),
       new MllibDenseVector(m.singularValues),
-      new DenseMatrix(m.vFactorRows, m.vFactorCols, m.vFactor),
+      new DenseMatrix(m.vFactorRows, m.vFactorCols, m.right_singular_vectors),
       m.leftSingularMatrix)
 
     // Create PrincipalComponentsModel to return
-    PrincipalComponentsModel(svdData)
+    PcaModel(svdData)
   }
 
   /**
    * Load a DAAL prinicpal components model from the given path
+   *
    * @param tc TkContext
    * @param path location
    * @return
    */
-  def load(tc: TkContext, path: String): PrincipalComponentsModel = {
-    tc.load(path).asInstanceOf[PrincipalComponentsModel]
+  def load(tc: TkContext, path: String): PcaModel = {
+    tc.load(path).asInstanceOf[PcaModel]
   }
 }
 
@@ -112,7 +112,7 @@ object PrincipalComponentsModel extends TkSaveableObject {
  *
  * @param svdData Model data for Intel DAAL Singular Value Decomposition (SVD)
  */
-case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with Model with DaalModel {
+case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalModel {
   /**
    * Observation columns from the training data
    */
@@ -141,8 +141,8 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
   /**
    * Right singular vectors of the specified columns in the input frame
    */
-  def vFactor: Array[Array[Double]] = {
-    val lists = svdData.vFactor.toListOfList()
+  def right_singular_vectors: Array[Array[Double]] = {
+    val lists = svdData.right_singular_vectors.toListOfList()
 
     lists.map(list => list.toArray).toArray
   }
@@ -175,22 +175,24 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       require(svdData.observationColumns.length == observationColumns.get.length, "Number of columns for train and predict should be same")
     if (c.isDefined)
       require(svdData.k >= c.get, "Number of components must be at most the number of components trained on")
-
-    // Validate arguments
+    if (meanCentered)
+      require(this.meanCentered, "Cannot mean center the predict frame if the train frame was not mean centered.")
     val predictC = c.getOrElse(svdData.k)
     val predictColumns = observationColumns.getOrElse(svdData.observationColumns)
-    val frameRdd = new FrameRdd(frame.schema, frame.rdd)
-    val columnStatistics = frameRdd.columnStatistics(predictColumns)
+    val frameRdd = new FrameRdd(frame.schema, frame.rdd).zipWithIndex().map { case (row, index) => (index, row) }
+    require(predictColumns.length == svdData.observationColumns.length, "Number of columns for train and predict should be same")
+    require(predictC <= this.k, s"Number of components ($predictC) must be at most the number of components trained on ($this.k)")
+    predictColumns.map(columnName => frame.schema.requireColumnIsNumerical(columnName))
 
     //TODO: Update predict method once DAAL supports linear algebra operations on its numeric tables
     // Predict principal components and optional T-squared index
     val indexedRowMatrix = PrincipalComponentsFunctions.toIndexedRowMatrix(
-      frameRdd.zipWithIndex().map { case (row, index) => (index, row) },
+      frameRdd,
       frame.schema,
       predictColumns,
       meanCentered,
-      columnStatistics.mean.toArray)
-    val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.vFactor, predictC, indexedRowMatrix)
+      columnMeans)
+    val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.right_singular_vectors, predictC, indexedRowMatrix)
 
     val pcaColumns = for (i <- 1 to predictC) yield Column("p_" + i.toString, DataTypes.float64)
     val (componentColumns, components) = tSquaredIndex match {
@@ -202,11 +204,11 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       case false => (pcaColumns, principalComponents)
     }
 
-    val componentRows = components.rows.map(row => Row.fromSeq(row.vector.toArray.toSeq))
-    val componentFrame = new FrameRdd(FrameSchema(componentColumns.toList), componentRows)
-    val resultFrame = frameRdd.zipFrameRdd(componentFrame)
+    val componentRows = components.rows.map(row => (row.index, Row.fromSeq(row.vector.toArray.toSeq)))
 
-    new Frame(resultFrame.rdd, resultFrame.schema)
+    val joinedFrame = frameRdd.join(componentRows).map({ case (index, (rowA, rowB)) => (merge(rowA, rowB)) })
+    val componentFrame = new FrameRdd(FrameSchema(frame.schema.columns ++ componentColumns), joinedFrame)
+    new Frame(componentFrame, componentFrame.schema)
   }
 
   /**
@@ -221,11 +223,11 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       svdData.meanCentered,
       svdData.meanVector.toArray,
       svdData.singularValues.toArray,
-      svdData.vFactor.toArray,
-      svdData.vFactor.numRows,
-      svdData.vFactor.numCols,
+      svdData.right_singular_vectors.toArray,
+      svdData.right_singular_vectors.numRows,
+      svdData.right_singular_vectors.numCols,
       svdData.leftSingularMatrix)
-    TkSaveLoad.saveTk(sc, path, PrincipalComponentsModel.formatId, PrincipalComponentsModel.currentFormatVersion, tkMetadata)
+    TkSaveLoad.saveTk(sc, path, PcaModel.formatId, PcaModel.currentFormatVersion, tkMetadata)
   }
 
   /**
@@ -241,7 +243,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
       val meanCenteredVector: Array[Double] = (new DenseVector(x) - new DenseVector(columnMeans.toArray)).toArray
       inputVector = new MllibDenseVector(meanCenteredVector)
     }
-    val y = new MllibDenseMatrix(1, inputVector.size, inputVector.toArray).multiply(svdData.vFactor.asInstanceOf[MllibDenseMatrix])
+    val y = new MllibDenseMatrix(1, inputVector.size, inputVector.toArray).multiply(svdData.right_singular_vectors.asInstanceOf[MllibDenseMatrix])
     val yArray: Array[Double] = y.values
     var t_squared_index: Double = 0.0
     for (i <- 0 until k) {
@@ -256,7 +258,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
    */
   override def modelMetadata(): ModelMetaData = {
     new ModelMetaData("Intel DAAL Principal Components Model",
-      classOf[PrincipalComponentsModel].getName,
+      classOf[PcaModel].getName,
       classOf[DaalTkModelAdapter].getName,
       Map())
   }
@@ -286,7 +288,7 @@ case class PrincipalComponentsModel(svdData: SvdData) extends Serializable with 
  * @param meanCentered Indicator whether the columns were mean centered for training
  * @param meanVector Means of the columns
  * @param singularValues Singular values of the specified columns in the input frame
- * @param vFactor Right singular vectors of the specified columns in the input frame
+ * @param right_singular_vectors Right singular vectors of the specified columns in the input frame
  * @param vFactorRows Number of rows in vFactor matrix
  * @param vFactorCols Number of columns in vFactor matrix
  * @param leftSingularMatrix Optional RDD with left singular vectors of the specified columns in the input frame
@@ -296,7 +298,7 @@ case class PrincipalComponentsTkMetaData(k: Int,
                                          meanCentered: Boolean,
                                          meanVector: Array[Double],
                                          singularValues: Array[Double],
-                                         vFactor: Array[Double],
+                                         right_singular_vectors: Array[Double],
                                          vFactorRows: Int,
                                          vFactorCols: Int,
                                          leftSingularMatrix: Option[RDD[Vector]]) extends Serializable
