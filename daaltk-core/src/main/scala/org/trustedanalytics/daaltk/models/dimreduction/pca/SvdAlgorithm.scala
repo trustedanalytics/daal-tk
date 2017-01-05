@@ -1,21 +1,19 @@
 /**
- * /*
- * // Copyright (c) 2016 Intel Corporation 
- * //
- * // Licensed under the Apache License, Version 2.0 (the "License");
- * // you may not use this file except in compliance with the License.
- * // You may obtain a copy of the License at
- * //
- * //      http://www.apache.org/licenses/LICENSE-2.0
- * //
- * // Unless required by applicable law or agreed to in writing, software
- * // distributed under the License is distributed on an "AS IS" BASIS,
- * // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * // See the License for the specific language governing permissions and
- * // limitations under the License.
- * */
+ *  Copyright (c) 2016 Intel Corporation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-package org.trustedanalytics.daaltk.models.dimensionality_reduction.principal_components
+package org.trustedanalytics.daaltk.models.dimreduction.pca
 
 import java.util.Arrays
 import com.intel.daal.algorithms.svd._
@@ -223,7 +221,7 @@ case class PrincipalComponentsData(k: Int,
  * @param meanCentered Indicator whether the columns were mean centered for training
  * @param meanVector Means of the columns
  * @param singularValues Singular values of the specified columns in the input frame
- * @param vFactor Right singular vectors of the specified columns in the input frame
+ * @param right_singular_vectors Right singular vectors of the specified columns in the input frame
  * @param leftSingularMatrix Optional RDD with left singular vectors of the specified columns in the input frame
  */
 case class SvdData(k: Int,
@@ -231,7 +229,7 @@ case class SvdData(k: Int,
                    meanCentered: Boolean,
                    meanVector: Vector,
                    singularValues: Vector,
-                   vFactor: Matrix,
+                   right_singular_vectors: Matrix,
                    leftSingularMatrix: Option[RDD[Vector]]) {
   require(observationColumns != null && observationColumns.nonEmpty, "observationColumns must not be null nor empty")
   require(k >= 1, "number of Eigen values to use must be greater than equal to 1")
@@ -247,7 +245,7 @@ case class SvdData(k: Int,
       meanCentered,
       meanVector,
       singularValues,
-      vFactor)
+      right_singular_vectors)
   }
 }
 

@@ -1,36 +1,18 @@
-#
-# /*
-# // Copyright (c) 2016 Intel Corporation 
-# //
-# // Licensed under the Apache License, Version 2.0 (the "License");
-# // you may not use this file except in compliance with the License.
-# // You may obtain a copy of the License at
-# //
-# //      http://www.apache.org/licenses/LICENSE-2.0
-# //
-# // Unless required by applicable law or agreed to in writing, software
-# // distributed under the License is distributed on an "AS IS" BASIS,
-# // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# // See the License for the specific language governing permissions and
-# // limitations under the License.
-# */
-#
-
 # vim: set encoding=utf-8
 
-#  Copyright (c) 2016 Intel Corporation 
+#  Copyright (c) 2016 Intel Corporation
 #
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+#       http://www.apache.org/licenses/LICENSE-2.0
 #
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS,
-#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#  See the License for the specific language governing permissions and
-#  limitations under the License.
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 #
 
 """Setup up tests for regression """
@@ -53,30 +35,34 @@ def get_context():
     global global_tc
     with lock:
         if global_tc is None:
-		sparktkconf_dict = {'spark.driver.memory': "3712m", 
-					'spark.executor.instances' : '5', 
-					'spark.driver.cores': '1', 
-					'spark.driver.extraJavaOptions': '-Xmx2688m', 
-					'spark.driver.maxPermSize': '512m', 
-					'spark.driver.maxResultSize': '2g', 
-					'spark.dynamicAllocation.enabled': 'true', 
-					'spark.dynamicAllocation.maxExecutors': '116', 
-					'spark.dynamicAllocation.minExecutors': '1', 
-					'spark.executor.cores': '1', 
-					'spark.executor.extrajavaoptions': '-Xmx2688m',
-					'spark.executor.memory': '3200m', 
-					'spark.shuffle.io.preferDirectBufs': 'false', 
-					'spark.shuffle.service.enabled': 'true', 
-					'spark.yarn.am.waitTime': '1000000', 
-					'spark.yarn.driver.memoryOverhead': '384', 
-					'spark.yarn.executor.memoryOverhead': '384',
-					'spark.eventLog.enabled': 'false', 
-					'spark.sql.shuffle.partitions': '6'}
-                if config.run_mode:
-                    global_tc = stk.TkContext(master='yarn-client', other_libs=[daaltk])
+            sparktkconf_dict = {'spark.driver.memory': "3712m",
+                                'spark.executor.instances' : '5',
+                                'spark.driver.cores': '1',
+                                'spark.driver.extraJavaOptions': '-Xmx2688m',
+                                'spark.driver.maxPermSize': '512m',
+                                'spark.driver.maxResultSize': '2g',
+                                'spark.dynamicAllocation.enabled': 'true',
+                                'spark.dynamicAllocation.maxExecutors': '116',
+                                'spark.dynamicAllocation.minExecutors': '1',
+                                'spark.executor.cores': '1',
+                                'spark.executor.extrajavaoptions': '-Xmx2688m',
+                                'spark.executor.memory': '3200m',
+                                'spark.shuffle.io.preferDirectBufs': 'false',
+                                'spark.shuffle.service.enabled': 'true',
+                                'spark.yarn.am.waitTime': '1000000',
+                                'spark.yarn.driver.memoryOverhead': '384',
+                                'spark.yarn.executor.memoryOverhead': '384',
+                                'spark.eventLog.enabled': 'false',
+                                'spark.sql.shuffle.partitions': '6'}
+            if config.run_mode:
+                print "initializing context"
+                print ""
+                print ""
+                print ""
+                global_tc = stk.TkContext(master='yarn-client', other_libs=[daaltk])
 
-                else:
-                    global_tc = stk.TkContext(other_libs=[daaltk])
+            else:
+                global_tc = stk.TkContext(other_libs=[daaltk])
     return global_tc
 
 
