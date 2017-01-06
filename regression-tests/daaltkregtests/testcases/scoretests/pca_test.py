@@ -38,10 +38,9 @@ class PrincipalComponent(daaltk_test.DaalTKTestCase):
         pca_traindata = self.get_file("pcadata.csv")
         self.frame = self.context.frame.import_csv(pca_traindata, schema=schema)
     
-    @unittest.skip("daaltk: pca produces different result for daaltk than predict")
     def test_model_scoring(self):
         """Test pca scoring"""
-        model = self.context.daaltk.models.dimensionality_reduction.principal_components.train(
+        model = self.context.daaltk.models.dimreduction.pca.train(
             self.frame,
             ["X1", "X2", "X3", "X4", "X5",
             "X6", "X7", "X8", "X9", "X10"],
