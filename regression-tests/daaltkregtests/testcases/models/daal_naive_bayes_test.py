@@ -27,7 +27,7 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
         """Build the frames needed for the tests."""
         super(DaalNaiveBayes, self).setUp()
 
-        dataset = self.get_file("naive_bayes.csv")
+        dataset = self.get_file("naive_bayes_5_col.csv")
         schema = [("label", int),
                   ("count", int),
                   ("f1", int),
@@ -49,7 +49,7 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
          """Test training intializes theta, pi and labels"""
          model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label", ['f1', 'f2', 'f3'], 3)
          values = sorted(map(
-             lambda x: map(math.exp, x), models.feature_log_prob))
+             lambda x: map(math.exp, x), model.feature_log_prob))
          baseline = sorted([[0.3, 0.2, 0.5], [0.7, 0.0, 0.3], [0.2, 0.6, 0.2]])
          for i, j in zip(values, baseline):
              for k, l in zip(i, j):
@@ -78,7 +78,7 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
         # dataset
         res = model.predict(self.frame, ['f1', 'f2', 'f3'])
         res.add_columns(lambda x: [int(x['predicted_class'])], [("pc", int)])
-        res_2 = res.classification_metrics('label', 'pc')
+        res_2 = res.multiclass_classification_metrics('label', 'pc')
         self.assertGreater(res_2.precision, 0.9)
         self.assertGreater(res_2.recall, 0.9)
         self.assertGreater(res_2.accuracy, 0.9)
