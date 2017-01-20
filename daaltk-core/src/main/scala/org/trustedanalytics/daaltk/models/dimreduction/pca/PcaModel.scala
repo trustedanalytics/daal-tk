@@ -88,7 +88,7 @@ object PcaModel extends TkSaveableObject {
       m.meanCentered,
       new MllibDenseVector(m.meanVector),
       new MllibDenseVector(m.singularValues),
-      new DenseMatrix(m.vFactorRows, m.vFactorCols, m.right_singular_vectors),
+      new DenseMatrix(m.vFactorRows, m.vFactorCols, m.rightSingularVectors),
       m.leftSingularMatrix)
 
     // Create PrincipalComponentsModel to return
@@ -141,8 +141,8 @@ case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalM
   /**
    * Right singular vectors of the specified columns in the input frame
    */
-  def right_singular_vectors: Array[Array[Double]] = {
-    val lists = svdData.right_singular_vectors.toListOfList()
+  def rightSingularVectors: Array[Array[Double]] = {
+    val lists = svdData.rightSingularVectors.toListOfList()
 
     lists.map(list => list.toArray).toArray
   }
@@ -192,7 +192,7 @@ case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalM
       predictColumns,
       meanCentered,
       columnMeans)
-    val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.right_singular_vectors, predictC, indexedRowMatrix)
+    val principalComponents = PrincipalComponentsFunctions.computePrincipalComponents(svdData.rightSingularVectors, predictC, indexedRowMatrix)
 
     val pcaColumns = for (i <- 1 to predictC) yield Column("p_" + i.toString, DataTypes.float64)
     val (componentColumns, components) = tSquaredIndex match {
@@ -223,9 +223,9 @@ case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalM
       svdData.meanCentered,
       svdData.meanVector.toArray,
       svdData.singularValues.toArray,
-      svdData.right_singular_vectors.toArray,
-      svdData.right_singular_vectors.numRows,
-      svdData.right_singular_vectors.numCols,
+      svdData.rightSingularVectors.toArray,
+      svdData.rightSingularVectors.numRows,
+      svdData.rightSingularVectors.numCols,
       svdData.leftSingularMatrix)
     TkSaveLoad.saveTk(sc, path, PcaModel.formatId, PcaModel.currentFormatVersion, tkMetadata)
   }
@@ -243,7 +243,7 @@ case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalM
       val meanCenteredVector: Array[Double] = (new DenseVector(x) - new DenseVector(columnMeans.toArray)).toArray
       inputVector = new MllibDenseVector(meanCenteredVector)
     }
-    val y = new MllibDenseMatrix(1, inputVector.size, inputVector.toArray).multiply(svdData.right_singular_vectors.asInstanceOf[MllibDenseMatrix])
+    val y = new MllibDenseMatrix(1, inputVector.size, inputVector.toArray).multiply(svdData.rightSingularVectors.asInstanceOf[MllibDenseMatrix])
     val yArray: Array[Double] = y.values
     var t_squared_index: Double = 0.0
     for (i <- 0 until k) {
@@ -288,7 +288,7 @@ case class PcaModel(svdData: SvdData) extends Serializable with Model with DaalM
  * @param meanCentered Indicator whether the columns were mean centered for training
  * @param meanVector Means of the columns
  * @param singularValues Singular values of the specified columns in the input frame
- * @param right_singular_vectors Right singular vectors of the specified columns in the input frame
+ * @param rightSingularVectors Right singular vectors of the specified columns in the input frame
  * @param vFactorRows Number of rows in vFactor matrix
  * @param vFactorCols Number of columns in vFactor matrix
  * @param leftSingularMatrix Optional RDD with left singular vectors of the specified columns in the input frame
@@ -298,7 +298,7 @@ case class PrincipalComponentsTkMetaData(k: Int,
                                          meanCentered: Boolean,
                                          meanVector: Array[Double],
                                          singularValues: Array[Double],
-                                         right_singular_vectors: Array[Double],
+                                         rightSingularVectors: Array[Double],
                                          vFactorRows: Int,
                                          vFactorCols: Int,
                                          leftSingularMatrix: Option[RDD[Vector]]) extends Serializable
