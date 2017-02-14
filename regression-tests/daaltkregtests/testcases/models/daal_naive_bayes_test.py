@@ -19,6 +19,8 @@
 import unittest
 import math
 from daaltkregtests.lib import daaltk_test
+from pyspark.mllib import classification
+from pyspark.mllib.regression import LabeledPoint
 
 
 class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
@@ -27,9 +29,8 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
         """Build the frames needed for the tests."""
         super(DaalNaiveBayes, self).setUp()
 
-        dataset = self.get_file("naive_bayes_5_col.csv")
+        dataset = self.get_file("naive_bayes.csv")
         schema = [("label", int),
-                  ("count", int),
                   ("f1", int),
                   ("f2", int),
                   ("f3", int)]
@@ -44,45 +45,77 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
          """Test empty string for label coloum throws error."""
          with(self.assertRaisesRegexp(Exception, "label column must not be null nor empty")):
              self.context.daaltk.models.classification.naive_bayes.train(self.frame, "", ['f1', 'f2', 'f3'])
- 
+
     def test_model_test(self):
-         """Test training intializes theta, pi and labels"""
-         model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label", ['f1', 'f2', 'f3'], 3)
-         values = sorted(map(
-             lambda x: map(math.exp, x), model.feature_log_prob))
-         baseline = sorted([[0.3, 0.2, 0.5], [0.7, 0.0, 0.3], [0.2, 0.6, 0.2]])
-         for i, j in zip(values, baseline):
-             for k, l in zip(i, j):
-                 self.assertAlmostEqual(k, l, delta=.05)
- 
-         # This is hacky, should really train on another
-         # dataset
-         res = model.test(self.frame, "label", ['f1', 'f2', 'f3'])
-         self.assertGreater(res.precision, 0.9)
-         self.assertGreater(res.recall, 0.9)
-         self.assertGreater(res.accuracy, 0.9)
-         self.assertGreater(res.f_measure, 0.9)
- 
+        """Test training intializes theta, pi and labels"""
+        model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label",
+                                                                     ['f1', 'f2', 'f3'])
+
+        res = model.test(self.frame, "label")
+        true_pos = float(res.confusion_matrix["Predicted_Pos"]["Actual_Pos"])
+        false_neg = float(res.confusion_matrix["Predicted_Neg"]["Actual_Pos"])
+        false_pos = float(res.confusion_matrix["Predicted_Pos"]["Actual_Neg"])
+        true_neg = float(res.confusion_matrix["Predicted_Neg"]["Actual_Neg"])
+        recall = true_pos / (false_neg + true_pos)
+        precision = true_pos / (false_pos + true_pos)
+        f_measure = float(2) / (float(1/precision) + float(1/recall))
+        accuracy = float(true_pos + true_neg) / self.frame.count()
+        self.assertAlmostEqual(res.recall, recall)
+        self.assertAlmostEqual(res.precision, precision)
+        self.assertAlmostEqual(res.f_measure, f_measure)
+        self.assertAlmostEqual(res.accuracy, accuracy)
+
     def test_model_publish_bayes(self):
         """Test training intializes theta, pi and labels"""
         model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label", ['f1', 'f2', 'f3'])
         path = self.get_export_file(self.get_name("daal_naive_bayes"))
         model.export_to_mar(path)
         self.assertIn("hdfs", path)
- 
+
     def test_model_test_paramater_initiation(self):
         """Test training intializes theta, pi and labels"""
-        model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label", ['f1', 'f2', 'f3'], 3)
+        # we will compare pyspark's result with sparktks for predict
+        # points will be an array of pyspark LabelPoints
+        points = []
+        # the location of the dataset
+        location = self.get_local_dataset("naive_bayes.csv")
+        
+        # we have to build a dataset for pyspark
+        # pyspark expects an rdd of LabelPoints for
+        # its NaiveBayes model
+        with open(location, 'r') as datafile:
+            lines = datafile.read().split('\n')
+            dataset = []
+            # for each line, split into columns and
+            # create a label point object out of each line
+            for line in lines:
+                if line is not "":
+                    line = map(int, line.split(","))
+                    label = line[0]
+                    features = line[1:4]
+                    lp = LabeledPoint(label, features)
+                    points.append(lp)
+        # use pyspark context to parallelize
+        dataframe = self.context.sc.parallelize(points)
+        
+        # create a pyspark model from the data and a sparktk model
+        pyspark_model = classification.NaiveBayes.train(dataframe, 1.0)
+        model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label",
+                                                                     ['f1', 'f2', 'f3'])
 
-        # This is hacky, should really train on another
-        # dataset
-        res = model.predict(self.frame, ['f1', 'f2', 'f3'])
-        res.add_columns(lambda x: [int(x['predicted_class'])], [("pc", int)])
-        res_2 = res.multiclass_classification_metrics('label', 'pc')
-        self.assertGreater(res_2.precision, 0.9)
-        self.assertGreater(res_2.recall, 0.9)
-        self.assertGreater(res_2.accuracy, 0.9)
-        self.assertGreater(res_2.f_measure, 0.9)
+        # use our sparktk model to predict, download to pandas for 
+        # ease of comparison
+        predicted_frame = model.predict(self.frame, ['f1', 'f2', 'f3'])
+        analysis = predicted_frame.to_pandas()
+        
+        # iterate through the sparktk result and compare the prediction
+        # with pyspark's prediction
+        for index, row in analysis.iterrows():
+            # extract the features
+            features = [row["f1"], row["f2"], row["f3"]]
+            # use the features to get pyspark's result
+            pyspark_result = pyspark_model.predict(features)
+            self.assertEqual(row["predicted_class"], pyspark_result)
 
 
 if __name__ == '__main__':
