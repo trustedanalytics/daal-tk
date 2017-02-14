@@ -17,7 +17,6 @@
 
 """Tests Naive Bayes Model against known values"""
 import unittest
-import math
 from daaltkregtests.lib import daaltk_test
 from pyspark.mllib import classification
 from pyspark.mllib.regression import LabeledPoint
@@ -42,14 +41,14 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
             self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label", "")
 
     def test_model_train_empty_label_coloum(self):
-         """Test empty string for label coloum throws error."""
-         with(self.assertRaisesRegexp(Exception, "label column must not be null nor empty")):
-             self.context.daaltk.models.classification.naive_bayes.train(self.frame, "", ['f1', 'f2', 'f3'])
+        """Test empty string for label coloum throws error."""
+        with(self.assertRaisesRegexp(Exception, "label column must not be null nor empty")):
+            self.context.daaltk.models.classification.naive_bayes.train(self.frame, "", ['f1', 'f2', 'f3'])
 
     def test_model_test(self):
         """Test training intializes theta, pi and labels"""
         model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label",
-                                                                     ['f1', 'f2', 'f3'])
+                                                                            ['f1', 'f2', 'f3'])
 
         res = model.test(self.frame, "label")
         true_pos = float(res.confusion_matrix["Predicted_Pos"]["Actual_Pos"])
@@ -79,13 +78,12 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
         points = []
         # the location of the dataset
         location = self.get_local_dataset("naive_bayes.csv")
-        
+
         # we have to build a dataset for pyspark
         # pyspark expects an rdd of LabelPoints for
         # its NaiveBayes model
         with open(location, 'r') as datafile:
             lines = datafile.read().split('\n')
-            dataset = []
             # for each line, split into columns and
             # create a label point object out of each line
             for line in lines:
@@ -97,17 +95,17 @@ class DaalNaiveBayes(daaltk_test.DaalTKTestCase):
                     points.append(lp)
         # use pyspark context to parallelize
         dataframe = self.context.sc.parallelize(points)
-        
+
         # create a pyspark model from the data and a sparktk model
         pyspark_model = classification.NaiveBayes.train(dataframe, 1.0)
         model = self.context.daaltk.models.classification.naive_bayes.train(self.frame, "label",
-                                                                     ['f1', 'f2', 'f3'])
+                                                                            ['f1', 'f2', 'f3'])
 
-        # use our sparktk model to predict, download to pandas for 
+        # use our sparktk model to predict, download to pandas for
         # ease of comparison
         predicted_frame = model.predict(self.frame, ['f1', 'f2', 'f3'])
         analysis = predicted_frame.to_pandas()
-        
+
         # iterate through the sparktk result and compare the prediction
         # with pyspark's prediction
         for index, row in analysis.iterrows():
