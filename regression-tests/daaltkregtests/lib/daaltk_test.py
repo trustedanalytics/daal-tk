@@ -55,10 +55,6 @@ def get_context():
 					'spark.eventLog.enabled': 'false', 
 					'spark.sql.shuffle.partitions': '6'}
                 if config.run_mode:
-                    print "initializing context"
-                    print ""
-                    print ""
-                    print ""
                     global_tc = stk.TkContext(master='yarn-client', other_libs=[daaltk])
 
                 else:
